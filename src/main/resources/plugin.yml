@@ -1,0 +1,17 @@
+name: BuildMyThing
+author: Dendrobyte
+version: 0.2
+description: The plugin for the Build My Thing minigame on Redstone Oinkcraft!
+api-version: 1.14
+main: com.redstoneoinkcraft.buildmything.Main
+commands:
+  buildmything:
+    description: Access to the base Build My Thing commands
+    aliases: [bmt]
+permissions:
+  buildmything.create:
+    description: Permission to create BMT arenas
+  buildmything.events:
+    description: Allowed to use misc event commands like force starting
+softdepend:
+  - Multiverse-Core
