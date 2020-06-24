@@ -2,6 +2,7 @@ package com.redstoneoinkcraft.buildmything;
 
 import com.redstoneoinkcraft.buildmything.commands.BMTCommand;
 import com.redstoneoinkcraft.buildmything.listeners.CreationListeners;
+import com.redstoneoinkcraft.buildmything.listeners.JoiningListeners;
 import com.redstoneoinkcraft.buildmything.listeners.PreventItemDropListener;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -32,7 +33,7 @@ public class Main extends JavaPlugin {
         // Register events
         Bukkit.getServer().getPluginManager().registerEvents(new CreationListeners(), this);
         Bukkit.getServer().getPluginManager().registerEvents(new PreventItemDropListener(), this);
-
+        Bukkit.getServer().getPluginManager().registerEvents(new JoiningListeners(), this);
 
         // Get commands
         getCommand("buildmything").setExecutor(new BMTCommand());
