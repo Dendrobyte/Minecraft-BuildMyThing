@@ -26,6 +26,8 @@ public class ActiveArenaObject {
     private HashMap<Player, PlayerStates> activePlayers = new HashMap<>(2);
     private LinkedList<Player> playerQueue = new LinkedList<>();
     private int currentRound = 0;
+    boolean inUse = false;
+    private ArenaStates currentState = ArenaStates.WAITING;
 
     // Constructor
     public ActiveArenaObject(String name, int maxRound, int roundTime){
@@ -75,14 +77,41 @@ public class ActiveArenaObject {
         return maxRound;
     }
 
+    public void setMaxRound(int maxRound) {
+        this.maxRound = maxRound;
+    }
+
     public int getRoundTime(){
         return getRoundTime();
+    }
+
+    public void setRoundTime(int roundTime){
+        this.roundTime = roundTime;
+    }
+
+    public boolean isInUse(){
+        return inUse;
+    }
+
+    public void setInUse(boolean inUse){
+        this.inUse = inUse;
     }
 
     // Misc methods
     public void addPlayerToArena(Player player){
         playerQueue.add(player);
         activePlayers.put(player, PlayerStates.WAITING);
+        if(currentState == ArenaStates.WAITING){
+            // These are not announced, as a vote will override them at the very end of the waiting phase
+            if(activePlayers.size() == 2){
+                setMaxRound(5);
+                setRoundTime(60);
+            }
+            else if(activePlayers.size() == 5){
+                setMaxRound(3);
+                setRoundTime(60);
+            }
+        }
     }
 
     public void startQueue(){
