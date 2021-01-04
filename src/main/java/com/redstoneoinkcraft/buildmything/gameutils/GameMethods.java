@@ -14,10 +14,10 @@ import java.util.ArrayList;
  */
 public class GameMethods {
 
-    private GameMethods instance;
+    private static GameMethods instance;
     String prefix = Main.getInstance().getPrefix();
 
-    public GameMethods getInstance() {
+    public static GameMethods getInstance() {
         if(instance == null){
             instance = new GameMethods();
         }
@@ -25,6 +25,7 @@ public class GameMethods {
     }
 
     private ArrayList<ActiveArenaObject> loadedArenas = new ArrayList<>(2);
+
     public void createArena(String name){
         ActiveArenaObject currentArena = new ActiveArenaObject(name, 3, 60); // Create arena with default values
         loadedArenas.add(currentArena);
@@ -48,5 +49,10 @@ public class GameMethods {
             arena.addPlayerToArena(player);
             return true;
         }
+    }
+
+    private int maxPlayersPergame = 12;
+    public int getMaxPlayersPergame(){
+        return maxPlayersPergame;
     }
 }

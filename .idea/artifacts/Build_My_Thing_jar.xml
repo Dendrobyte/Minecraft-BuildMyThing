@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
   <artifact type="jar" name="Build-My-Thing:jar">
-    <output-path>F:/Misc Programming/MC TESTING SERVER (1.15)/plugins</output-path>
+    <output-path>E:/MC TESTING SERVER (1.16)/plugins</output-path>
     <root id="archive" name="Build-My-Thing.jar">
       <element id="module-output" name="Build-My-Thing" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/sonatype/aether/aether-impl/1.7/aether-impl-1.7.jar" path-in-jar="/" />

@@ -1,11 +1,10 @@
 package com.redstoneoinkcraft.buildmything.listeners;
 
-import com.redstoneoinkcraft.buildmything.CreationStates;
+import com.redstoneoinkcraft.buildmything.creationutils.CreationStates;
 import com.redstoneoinkcraft.buildmything.Main;
 import com.redstoneoinkcraft.buildmything.creationutils.CreationArenaObject;
 import com.redstoneoinkcraft.buildmything.creationutils.CreationMethods;
 import org.bukkit.ChatColor;
-import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

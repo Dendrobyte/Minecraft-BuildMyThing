@@ -1,6 +1,7 @@
 package com.redstoneoinkcraft.buildmything.gameutils;
 
 import com.redstoneoinkcraft.buildmything.Main;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.block.Sign;
@@ -18,17 +19,44 @@ import java.util.*;
 public class ActiveArenaObject {
 
     // Variables
-    Location lobbySpawnLocation, joinSignLocation, buildRegionCornerOne, buildRegionCornerTwo, buildRegionCenter;
-    String name;
-    int maxRound;
-    int roundTime;
+    private Location lobbySpawnLocation, joinSignLocation, buildRegionCornerOne, buildRegionCornerTwo, buildRegionCenter;
+    private String name;
+    private int maxRound;
+    private ArenaTimer timer;
+    private int maxPlayers = GameMethods.getInstance().getMaxPlayersPergame();
 
-    private HashMap<Player, PlayerStates> activePlayers = new HashMap<>(2);
-    private LinkedList<Player> playerQueue = new LinkedList<>();
+    private HashMap<Player, PlayerStates> activePlayers = new HashMap<>(2); // Stores all players and if they are builders or spectators
+    private LinkedList<Player> playerQueue = new LinkedList<>(); // Queue of players who have yet to be builders
     private int currentRound = 0;
     boolean inUse = false;
     private ArenaStates currentState = ArenaStates.WAITING;
 
+    /* Getters specifically for fields we'll need to access in other classes */
+
+    // Return whoever is the current builder
+    public Player getCurrentBuilder(){ // If all is done properly, there will only be one builder :)
+        for(Player player : activePlayers.keySet()){
+            if(activePlayers.get(player) == PlayerStates.BUILDING){
+                return player;
+            }
+        }
+        return null; // Shouldn't happen :(
+    }
+
+    // Return a list of all the spectators
+    public ArrayList<Player> getCurrentSpectators(){
+        ArrayList<Player> spectators = new ArrayList<>(activePlayers.size());
+        spectators.addAll(activePlayers.keySet());
+        spectators.remove(getCurrentBuilder());
+        return spectators;
+    }
+
+    // Return the arena's current state
+    public ArenaStates getCurrentState(){
+        return currentState;
+    }
+
+    /* Object construction */
     // Constructor
     public ActiveArenaObject(String name, int maxRound, int roundTime){
         this.name = name;
@@ -41,7 +69,7 @@ public class ActiveArenaObject {
         buildRegionCenter = new Location(buildRegionCornerOne.getWorld(), calcMean(buildRegionCornerOne.getBlockX(), buildRegionCornerTwo.getBlockX()), buildRegionCornerTwo.getBlockY()+2, calcMean(buildRegionCornerOne.getBlockZ(), buildRegionCornerTwo.getBlockZ()));
 
         this.maxRound = maxRound;
-        this.roundTime = roundTime;
+        this.timer = new ArenaTimer(this);
     }
 
     private int calcMean(int a, int b){
@@ -55,10 +83,6 @@ public class ActiveArenaObject {
 
     public Location getLobbyLoc(){
         return lobbySpawnLocation;
-    }
-
-    public Sign getJoinSign(){
-        return (Sign)joinSignLocation.getBlock().getState();
     }
 
     public int getCurrentRound(){
@@ -82,11 +106,11 @@ public class ActiveArenaObject {
     }
 
     public int getRoundTime(){
-        return getRoundTime();
+        return timer.roundTimer;
     }
 
     public void setRoundTime(int roundTime){
-        this.roundTime = roundTime;
+        this.timer.roundTimer = roundTime;
     }
 
     public boolean isInUse(){
@@ -97,54 +121,146 @@ public class ActiveArenaObject {
         this.inUse = inUse;
     }
 
-    // Misc methods
+    public Sign getJoinSign(){
+        return (Sign)joinSignLocation.getBlock().getState();
+    }
+
+    // Methods for the game timer (before first round starts)
+    private int adjustTimeUntilStart(int seconds){
+        return timer.timeUntilStart = seconds;
+    }
+
+    // Add a new player to an arena when they join
     public void addPlayerToArena(Player player){
+
+        // Initiate queues
         playerQueue.add(player);
         activePlayers.put(player, PlayerStates.WAITING);
+
+        // Update sign
+        getJoinSign().setLine(3, playerQueue.size() + "/" + maxPlayers);
+        getJoinSign().update();
+
+        // Calc things to start the game
         if(currentState == ArenaStates.WAITING){
             // These are not announced, as a vote will override them at the very end of the waiting phase
             if(activePlayers.size() == 2){
                 setMaxRound(5);
                 setRoundTime(60);
+                // Start the game timer
+                timer.runTaskTimer(Main.getInstance(), 0, 20);
             }
             else if(activePlayers.size() == 5){
                 setMaxRound(3);
-                setRoundTime(60);
+                setRoundTime(30);
             }
+            // Give the player at least a few seconds to vote
+            else if(activePlayers.size() > 5){
+                if(timer.timeUntilStart < 10 && timer.timeUntilStart > 3){
+                    adjustTimeUntilStart(10);
+                }
+                // TODO: Announce that timer has reset to 10 seconds, also add announcement for countdown from 5
+            }
+
+            // Automatically open voting inventory
+            IngameVoteInventory.getInstance().openInventory(player);
         }
     }
 
+    // Initiate the game
+    public void initGame(){
+
+        // Change the join sign
+        getJoinSign().setLine(2, ChatColor.GREEN + "ACTIVE");
+        getJoinSign().update();
+
+        // Set up proper data
+        currentState = ArenaStates.ACTIVE;
+        timer.gameStarted = true;
+        timer.runTaskTimer(Main.getInstance(), 0, 20);
+    }
+
+    // Get the next player to make into a builder for the first go
     public void startQueue(){
         Player firstBuilder = playerQueue.getFirst();
         activePlayers.put(firstBuilder, PlayerStates.BUILDING);
-        firstBuilder.teleport(buildRegionCenter);
-        firstBuilder.setGameMode(GameMode.CREATIVE);
+        setSpectatorToBuilder(firstBuilder);
     }
 
     public void nextBuilder(Player currentBuilder){
-        activePlayers.put(currentBuilder, PlayerStates.SPECTATING);
+        activePlayers.put(currentBuilder, PlayerStates.SPECTATING); // Put the last person to build back as a spectator
+
+        // If the builder is the last one in the queue, then we've gone through all the players so go to next round
         if(currentBuilder.getName().equals(playerQueue.getLast().getName())){
-            currentBuilder.teleport(lobbySpawnLocation);
-            currentBuilder.setGameMode(GameMode.ADVENTURE);
+            resetBuilderToSpectator(currentBuilder);
             startNextRound();
             return;
         }
+
+        // Go ahead and shift down the queue and reset the builder to a spectator
         Player nextPlayer = playerQueue.get(playerQueue.indexOf(currentBuilder)+1);
         activePlayers.put(nextPlayer, PlayerStates.BUILDING);
-        currentBuilder.teleport(lobbySpawnLocation);
-        currentBuilder.setGameMode(GameMode.ADVENTURE);
-        nextPlayer.teleport(buildRegionCenter);
-        nextPlayer.setGameMode(GameMode.CREATIVE);
+        resetBuilderToSpectator(currentBuilder);
+        setSpectatorToBuilder(nextPlayer);
     }
 
+    // Set a spectator to a builder... used at start of queue and when next spectator is made a builder
+    public void setSpectatorToBuilder(Player nextBuilder){
+        nextBuilder.teleport(buildRegionCenter);
+        nextBuilder.setGameMode(GameMode.CREATIVE);
+    }
+
+    // Reset a builder to a spectator
+    public void resetBuilderToSpectator(Player currentBuilder){
+        currentBuilder.teleport(lobbySpawnLocation);
+        currentBuilder.setGameMode(GameMode.ADVENTURE);
+    }
+
+    // Go ahead and start the next round (called when all spectators have built)
     public void startNextRound(){
         if(currentRound == maxRound){
-            // TODO: Finish game
+            endGame();
             return;
         }
         // TODO: Announce to players the next round
+
+        // Restart the queue and builder stuff (more or less totally irrelevant to other things and can operate on its own)
         startQueue();
         incrCurrentRound();
+    }
+
+    // Remove player from game, whether they be kicked, leaving, or game ending
+    public void removePlayerFromGame(Player playerToRemove){
+        // TODO: :)
+
+        // Reset timer if game is empty
+        if(playerQueue.size() == 0){
+            endGame();
+        }
+    }
+
+    // Wrap up the game
+    public void endGame(){
+        // TODO: Calc stats for winner
+
+        // TODO: Announce winner and unique stats to each player
+
+        // Remove each player from the game and bring them to minigame spawn
+        for(Player player : playerQueue){
+            removePlayerFromGame(player);
+        }
+
+        // Clear up data
+        currentState = ArenaStates.WAITING;
+        getJoinSign().setLine(2, ChatColor.WHITE + "WAITING");
+        getJoinSign().setLine(3, "0/" + maxPlayers);
+        getJoinSign().update();
+        activePlayers.clear();
+        playerQueue.clear();
+        currentRound = 0;
+        timer.cancel();
+        timer = new ArenaTimer(this);
+
     }
 
 }

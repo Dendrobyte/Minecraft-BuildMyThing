@@ -1,8 +1,7 @@
 package com.redstoneoinkcraft.buildmything.commands;
 
-import com.redstoneoinkcraft.buildmything.CreationStates;
+import com.redstoneoinkcraft.buildmything.creationutils.CreationStates;
 import com.redstoneoinkcraft.buildmything.Main;
-import com.redstoneoinkcraft.buildmything.creationutils.CreationArenaObject;
 import com.redstoneoinkcraft.buildmything.creationutils.CreationMethods;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -20,6 +19,7 @@ public class BMTCommand implements CommandExecutor {
 
     String prefix = Main.getInstance().getPrefix();
 
+    // TODO: Refactor all permissions from a permissions class since they may be used in multiple locations
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
         if(!(sender instanceof Player)){
             sender.sendMessage(prefix + "You must be a player to use this command.");
@@ -72,6 +72,7 @@ public class BMTCommand implements CommandExecutor {
                 player.sendMessage("" + ChatColor.DARK_AQUA + "---- " + ChatColor.DARK_PURPLE + "Event Management Commands" + ChatColor.DARK_AQUA + " ----");
                 player.sendMessage("" + ChatColor.DARK_PURPLE + "/bmt forcestart" + ChatColor.DARK_AQUA + " - Force start the game you are in");
                 // TODO (see below)
+                // The reason we have this is so that event managers can put spins on the rounds and whatnot, like challenges or speed rounds
                 player.sendMessage("" + ChatColor.DARK_PURPLE + "/bmt set <round_number> <round_time>" + ChatColor.DARK_AQUA + " - Force/outvote the game parameters");
             }
             if (args.length > 0) {

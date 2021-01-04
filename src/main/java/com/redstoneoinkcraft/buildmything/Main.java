@@ -38,6 +38,9 @@ public class Main extends JavaPlugin {
         // Get commands
         getCommand("buildmything").setExecutor(new BMTCommand());
 
+        // Load all arenas
+        // TODO: Loop through arena names in the config and create them. Details filled in within the ActiveArenaObject.
+
         System.out.println(prefix + "Successfully enabled Build My Thing v" + getDescription().getVersion() + "!");
     }
 

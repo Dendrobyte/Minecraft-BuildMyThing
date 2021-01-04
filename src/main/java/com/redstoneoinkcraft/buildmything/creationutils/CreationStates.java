@@ -1,4 +1,4 @@
-package com.redstoneoinkcraft.buildmything;
+package com.redstoneoinkcraft.buildmything.creationutils;
 
 /**
  * BuildMyThing created/started by markb (Mobkinz78/Dendrobyte)
@@ -7,5 +7,5 @@ package com.redstoneoinkcraft.buildmything;
  * §
  */
 public enum CreationStates {
-    ARENA_SPAWN, BUILD_REGION, JOIN_SIGN, FINISH;
+    ARENA_SPAWN, BUILD_REGION, JOIN_SIGN, FINISH
 }

@@ -1,7 +1,7 @@
 package com.redstoneoinkcraft.buildmything.creationutils;
 
-import com.redstoneoinkcraft.buildmything.CreationStates;
 import com.redstoneoinkcraft.buildmything.Main;
+import com.redstoneoinkcraft.buildmything.gameutils.GameMethods;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -80,7 +80,7 @@ public class CreationMethods {
         sign.setLine(0, prefix.substring(0, prefix.length()-1));
         sign.setLine(1, name);
         sign.setLine(2, "" + ChatColor.GRAY + ChatColor.ITALIC + "WAITING");
-        sign.setLine(3, "0/12");
+        sign.setLine(3, "0/" + GameMethods.getInstance().getMaxPlayersPergame());
         sign.update();
     }
 
@@ -92,6 +92,7 @@ public class CreationMethods {
         writeJoinSign(arena.getJoinSignLocation(), playerCreationArenas.get(player).getName());
         playerCreationArenas.remove(player);
         playersCreationStates.remove(player);
+        GameMethods.getInstance().createArena(name); // Loads the arena
         player.sendMessage(prefix + "Successfully created the arena " + name + "!");
     }
 
