@@ -27,11 +27,22 @@ public class BMTCommand implements CommandExecutor {
         }
 
         Player player = (Player) sender;
+        if(args.length > 0){
+            if(args[0].equalsIgnoreCase("leave")){
+                // TODO: Get arena by player and have them leave
+            }
+            if(args[0].equalsIgnoreCase("vote")){
+                // TODO: Open the voting menu for a player if they are in a game (voting managed by what arena the inventory belongs to)
+            }
+        }
+
+        /* Stuff for the help menu(s) */
         if(args.length == 0){
             player.sendMessage("" + ChatColor.GOLD + "---- " + ChatColor.DARK_PURPLE + "BuildMyThing Commands" + ChatColor.GOLD + " ----");
             player.sendMessage("" + ChatColor.DARK_PURPLE + "/bmt leave" + ChatColor.GOLD + " - Leave the game you are in");
             player.sendMessage("" + ChatColor.DARK_PURPLE + "/bmt vote" + ChatColor.GOLD + " - Vote for round time and length");
         }
+
         if(player.hasPermission("buildmything.create")){
             CreationMethods creationMethods = CreationMethods.getInstance();
             if (args.length == 0){
@@ -67,8 +78,8 @@ public class BMTCommand implements CommandExecutor {
             }
 
         }
-        if(player.hasPermission("buildmything.events")){
-            if(args.length == 0){
+        if(player.hasPermission("buildmything.events")) {
+            if (args.length == 0) {
                 player.sendMessage("" + ChatColor.DARK_AQUA + "---- " + ChatColor.DARK_PURPLE + "Event Management Commands" + ChatColor.DARK_AQUA + " ----");
                 player.sendMessage("" + ChatColor.DARK_PURPLE + "/bmt forcestart" + ChatColor.DARK_AQUA + " - Force start the game you are in");
                 // TODO (see below)

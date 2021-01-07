@@ -40,15 +40,26 @@ public class GameMethods {
         return null;
     }
 
-    public boolean addPlayerToGame(Player player, String arenaName){
-        ActiveArenaObject arena = getArenaByName(arenaName);
+    // Little wrapper methods of sorts
+    ArrayList<Player> playersInGames = new ArrayList<>(2);
+    public boolean addPlayerToGame(Player player, ActiveArenaObject arena){
+        if(playersInGames.contains(player)){
+            player.sendMessage(prefix + "You appear to already be in a game (contact an admin if you believe this is a problem).");
+            return false;
+        }
         if(arena == null){
             player.sendMessage(prefix + ChatColor.RED + "This arena doesn't seem to be set up properly. Please contact a staff member!");
             return false;
         } else {
             arena.addPlayerToArena(player);
+            playersInGames.add(player);
             return true;
         }
+    }
+
+    public void removePlayerFromGame(Player player, ActiveArenaObject arena){
+        if(playersInGames.contains(player)) playersInGames.remove(player);
+        arena.removePlayerFromArena(player);
     }
 
     private int maxPlayersPergame = 12;

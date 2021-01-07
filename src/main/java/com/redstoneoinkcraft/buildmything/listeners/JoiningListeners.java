@@ -35,7 +35,6 @@ public class JoiningListeners implements Listener {
 
             // Go ahead and grab the arena so we don't rely on the sign info
             String arenaName = joinSign.getLine(1);
-            GameMethods.getInstance().createArena(arenaName); // TODO: FOR TESTING! DELETE THIS! Error is NPE on line 69, screenshot on Todoist
             ActiveArenaObject currArena = gameMethods.getArenaByName(arenaName);
 
             // Check if the arena exists, just in case
@@ -50,6 +49,9 @@ public class JoiningListeners implements Listener {
                 player.sendMessage(prefix + ChatColor.RED + "Sorry! That game is currently ongoing.");
                 return;
             }
+
+            // Otherwise, add the player to the game
+            gameMethods.addPlayerToGame(player, currArena);
         }
     }
 }

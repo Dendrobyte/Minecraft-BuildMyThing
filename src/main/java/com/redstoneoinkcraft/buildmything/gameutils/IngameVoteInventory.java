@@ -34,7 +34,7 @@ public class IngameVoteInventory implements Listener {
     {
         // Button to vote for number of rounds
         ItemStack button = new ItemStack(Material.STONE_BUTTON); // TODO: Give this name and meta
-        voteInventory.setItem(7, button);
+        voteInventory.setItem(6, button);
     }
 
     public void openInventory(Player player){

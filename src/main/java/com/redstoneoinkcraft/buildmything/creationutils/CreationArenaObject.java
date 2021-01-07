@@ -35,7 +35,7 @@ public class CreationArenaObject {
     }
 
     public void setLobbySpawnLocation(Location lobbySpawnLocation) {
-        this.lobbySpawnLocation = lobbySpawnLocation;
+        this.lobbySpawnLocation = new Location(lobbySpawnLocation.getWorld(), lobbySpawnLocation.getBlockX(), lobbySpawnLocation.getBlockY()+2, lobbySpawnLocation.getBlockZ());
     }
 
     public Location getJoinSignLocation() {

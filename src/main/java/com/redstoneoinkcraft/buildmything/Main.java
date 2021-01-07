@@ -1,9 +1,9 @@
 package com.redstoneoinkcraft.buildmything;
 
 import com.redstoneoinkcraft.buildmything.commands.BMTCommand;
-import com.redstoneoinkcraft.buildmything.listeners.CreationListeners;
-import com.redstoneoinkcraft.buildmything.listeners.JoiningListeners;
-import com.redstoneoinkcraft.buildmything.listeners.PreventItemDropListener;
+import com.redstoneoinkcraft.buildmything.gameutils.ActiveArenaObject;
+import com.redstoneoinkcraft.buildmything.gameutils.GameMethods;
+import com.redstoneoinkcraft.buildmything.listeners.*;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -34,12 +34,19 @@ public class Main extends JavaPlugin {
         Bukkit.getServer().getPluginManager().registerEvents(new CreationListeners(), this);
         Bukkit.getServer().getPluginManager().registerEvents(new PreventItemDropListener(), this);
         Bukkit.getServer().getPluginManager().registerEvents(new JoiningListeners(), this);
+        Bukkit.getServer().getPluginManager().registerEvents(new CommandListeners(), this);
+        Bukkit.getServer().getPluginManager().registerEvents(new BlockBreakListener(), this);
 
         // Get commands
         getCommand("buildmything").setExecutor(new BMTCommand());
 
         // Load all arenas
         // TODO: Loop through arena names in the config and create them. Details filled in within the ActiveArenaObject.
+        for(String arenaName : getConfig().getConfigurationSection("arenas").getKeys(false)){
+            System.out.println("BMT -- Loading map " + arenaName);
+            GameMethods.getInstance().createArena(arenaName);
+            System.out.println("Loaded " + arenaName + "!");
+        }
 
         System.out.println(prefix + "Successfully enabled Build My Thing v" + getDescription().getVersion() + "!");
     }

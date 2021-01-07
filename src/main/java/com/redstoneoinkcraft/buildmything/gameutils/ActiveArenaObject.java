@@ -1,13 +1,14 @@
 package com.redstoneoinkcraft.buildmything.gameutils;
 
 import com.redstoneoinkcraft.buildmything.Main;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -24,6 +25,7 @@ public class ActiveArenaObject {
     private int maxRound;
     private ArenaTimer timer;
     private int maxPlayers = GameMethods.getInstance().getMaxPlayersPergame();
+    String prefix = Main.getInstance().getPrefix();
 
     private HashMap<Player, PlayerStates> activePlayers = new HashMap<>(2); // Stores all players and if they are builders or spectators
     private LinkedList<Player> playerQueue = new LinkedList<>(); // Queue of players who have yet to be builders
@@ -63,8 +65,8 @@ public class ActiveArenaObject {
         String basePath = "arenas." + name;
         lobbySpawnLocation = Main.getInstance().getConfig().getLocation(basePath + ".lobbyspawnloc");
         joinSignLocation = Main.getInstance().getConfig().getLocation(basePath + ".joinsignloc");
-        buildRegionCornerOne = Main.getInstance().getConfig().getLocation(basePath + ".buildRegionCornerOne");
-        buildRegionCornerTwo = Main.getInstance().getConfig().getLocation(basePath + ".buildRegionCornerTwo");
+        buildRegionCornerOne = Main.getInstance().getConfig().getLocation(basePath + ".corneroneloc");
+        buildRegionCornerTwo = Main.getInstance().getConfig().getLocation(basePath + ".cornertwoloc");
 
         buildRegionCenter = new Location(buildRegionCornerOne.getWorld(), calcMean(buildRegionCornerOne.getBlockX(), buildRegionCornerTwo.getBlockX()), buildRegionCornerTwo.getBlockY()+2, calcMean(buildRegionCornerOne.getBlockZ(), buildRegionCornerTwo.getBlockZ()));
 
@@ -125,6 +127,10 @@ public class ActiveArenaObject {
         return (Sign)joinSignLocation.getBlock().getState();
     }
 
+    public void updateJoinSign(){
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> getJoinSign().update());
+    }
+
     // Methods for the game timer (before first round starts)
     private int adjustTimeUntilStart(int seconds){
         return timer.timeUntilStart = seconds;
@@ -136,10 +142,13 @@ public class ActiveArenaObject {
         // Initiate queues
         playerQueue.add(player);
         activePlayers.put(player, PlayerStates.WAITING);
+        player.teleport(getLobbyLoc());
 
         // Update sign
-        getJoinSign().setLine(3, playerQueue.size() + "/" + maxPlayers);
+        System.out.println("Size: " + activePlayers.size());
+        getJoinSign().setLine(3, activePlayers.size() + "/" + maxPlayers);
         getJoinSign().update();
+        System.out.println("line 3 post update: " + getJoinSign().getLine(3));
 
         // Calc things to start the game
         if(currentState == ArenaStates.WAITING){
@@ -162,6 +171,15 @@ public class ActiveArenaObject {
                 // TODO: Announce that timer has reset to 10 seconds, also add announcement for countdown from 5
             }
 
+            // Send some messages
+            player.sendMessage(prefix + "Welcome to Build My Thing!");
+            player.sendMessage(prefix + "Your arena: " + ChatColor.DARK_PURPLE + ChatColor.BOLD + getName());
+            // Change based on first or secondary players
+            if(activePlayers.size() == 1)
+                    player.sendMessage(prefix + "You're first! Waiting for other players...");
+            else
+                    player.sendMessage(prefix + "Time left 'til game start: " + ChatColor.GOLD + ChatColor.BOLD + timer.timeUntilStart);
+
             // Automatically open voting inventory
             IngameVoteInventory.getInstance().openInventory(player);
         }
@@ -172,7 +190,7 @@ public class ActiveArenaObject {
 
         // Change the join sign
         getJoinSign().setLine(2, ChatColor.GREEN + "ACTIVE");
-        getJoinSign().update();
+        updateJoinSign();
 
         // Set up proper data
         currentState = ArenaStates.ACTIVE;
@@ -230,7 +248,7 @@ public class ActiveArenaObject {
     }
 
     // Remove player from game, whether they be kicked, leaving, or game ending
-    public void removePlayerFromGame(Player playerToRemove){
+    public void removePlayerFromArena(Player playerToRemove){
         // TODO: :)
 
         // Reset timer if game is empty
@@ -247,7 +265,7 @@ public class ActiveArenaObject {
 
         // Remove each player from the game and bring them to minigame spawn
         for(Player player : playerQueue){
-            removePlayerFromGame(player);
+            removePlayerFromArena(player);
         }
 
         // Clear up data
