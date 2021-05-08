@@ -6,8 +6,9 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="Build-My-Thing" />
         <module name="Oinkcraft Minigames" />
+        <module name="Build My Thing" />
+        <module name="Build-My-Thing" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="8" />
