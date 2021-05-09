@@ -83,15 +83,13 @@ These are all tentative starting equations...
 **Every subsequent guess:** The artist gets `+0` and the guesser gets `+1`.
 
 - ⏰ **Time Adjustment**
-
-  ```java
-    if (S >= 10) {
-      S = 10
-    }
-  ```
-  $$\text{if } (S\geq10) \text{ then } S = 10$$
-
-  This is only for the fifth guess, we won't keep resetting haha. Perhaps an idea in the future will be to see if there are still half the players remaining or something.
+```java
+if (S >= 10) {
+    S = 10
+}
+```
+  
+This is only for the fifth guess, we won't keep resetting haha. Perhaps an idea in the future will be to see if there are still half the players remaining or something.
 
 If all players in a game, where `P > 4`*,* the artist will get a bonus of `+3`. This ends up giving the artist a 2 point advantage if all players guess and a 2 point *dis*advantage if only a few players guess, where the advantage/disadvantage is compared to the first guesser.
 
