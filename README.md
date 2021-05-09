@@ -62,34 +62,33 @@ Players can earn points in two ways: by saying the correct answer to what is bei
 
 We will start with saying there are `S` seconds in a round and `P` players in said round. Points will work to be in the upper tens, such that getting a hundred points would be miraculous. These times will definitely need to be adjusted, right now they are all the same but I would love to add conditionals based on the start time, i.e. fourth guess equation changes depending on whether the game started with `120 seconds` or `30 seconds`.
 
+These are all tentative starting equations...
+
 **First guess:** Artist gets `+8`, guesser gets `+10`
 
-- ⏰ **Time Adjustment**
-
-  $$S = S - \frac{1}{4}S$$
+- ⏰ **Time Adjustment:** S = S - (1/4)S
 
 **Second guess:** Artist gets `+0`, guesser gets `+8`
 
-- ⏰ **Time Adjustment**
-
-  $$S = S - \frac{1}{8}S$$
+- ⏰ **Time Adjustment:** S = S - (1/8)S
 
 **Third guess:** Artist gets `+0`, guesser gets `+5`
 
-- ⏰ **Time Adjustment**
-
-  $$S = S - \frac{1}{8}S$$
+- ⏰ **Time Adjustment:** S = S - (1/8)S
 
 **Fourth guess:** Artist gets `+0`, guesser gets `+2`.
 
-- ⏰ **Time Adjustment**
-
-  $$S = \frac{1}{2}S$$
+- ⏰ **Time Adjustment:** S = (1/2)
 
 **Every subsequent guess:** The artist gets `+0` and the guesser gets `+1`.
 
 - ⏰ **Time Adjustment**
 
+  ```java
+    if (S >= 10) {
+      S = 10
+    }
+  ```
   $$\text{if } (S\geq10) \text{ then } S = 10$$
 
   This is only for the fifth guess, we won't keep resetting haha. Perhaps an idea in the future will be to see if there are still half the players remaining or something.
@@ -98,6 +97,7 @@ If all players in a game, where `P > 4`*,* the artist will get a bonus of `+3`. 
 
 **Last second guess:** If a player guesses the word within the last `1.5 seconds` of the game, they get `+3` for a 4 point total *if they are the fourth guesser or greater.*
 
+**All plays guess:** If all players successfully guess the word, the artist gets `+6`
 ## 👷‍♂️Builders and Guessers
 
 Each round, a player will have one opportunity to be a builder and the rest will be guessers. This goes for each player until the round is over and resets. The sequence is as follows:
