@@ -144,12 +144,6 @@ public class ActiveArenaObject {
         activePlayers.put(player, PlayerStates.WAITING);
         player.teleport(getLobbyLoc());
 
-        // Update sign
-        System.out.println("Size: " + activePlayers.size());
-        getJoinSign().setLine(3, activePlayers.size() + "/" + maxPlayers);
-        getJoinSign().update();
-        System.out.println("line 3 post update: " + getJoinSign().getLine(3));
-
         // Calc things to start the game
         if(currentState == ArenaStates.WAITING){
             // These are not announced, as a vote will override them at the very end of the waiting phase

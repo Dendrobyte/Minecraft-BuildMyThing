@@ -40,25 +40,25 @@ public class JoiningListeners implements Listener {
             // Check if the arena exists, just in case
             if(currArena == null){
                 player.sendMessage(prefix + "This arena appears not to exist... Please contact an admin.");
-                return;
             }
 
             // Check if the arena is running
-            if(currArena.getCurrentState() == ArenaStates.ACTIVE){
+            else if(currArena.getCurrentState() == ArenaStates.ACTIVE){
                 // TODO: Allow players to join ongoing games (just add them to the queue)
                 player.sendMessage(prefix + ChatColor.RED + "Sorry! That game is currently ongoing.");
-                return;
             }
+            else {
+                // Otherwise, add the player to the game
+                boolean added = gameMethods.addPlayerToGame(player, currArena);
+                if(added) {
 
-            // Otherwise, add the player to the game
-            gameMethods.addPlayerToGame(player, currArena);
+                    // Update the sign
+                    String pCountString = joinSign.getLine(3).split("/")[0];
+                    int currPCount = Integer.parseInt(pCountString); // It's pretty reliable this will always be a number
+                    joinSign.setLine(3, currPCount + 1 + "/" + gameMethods.getMaxPlayersPergame());
+                    joinSign.update();
+                }
+            }
         }
     }
 }
-
-/*
-    sign.setLine(0, prefix.substring(0, prefix.length()-1));
-    sign.setLine(1, name);
-    sign.setLine(2, "" + ChatColor.GRAY + ChatColor.ITALIC + "WAITING");
-    sign.setLine(3, "0/12");
- */
