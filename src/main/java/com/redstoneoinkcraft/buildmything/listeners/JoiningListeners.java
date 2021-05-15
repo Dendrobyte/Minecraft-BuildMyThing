@@ -49,12 +49,15 @@ public class JoiningListeners implements Listener {
             }
             else {
                 // Otherwise, add the player to the game
-                gameMethods.addPlayerToGame(player, currArena);
-                // Update the sign
-                String pCountString = joinSign.getLine(3).split("/")[0];
-                int currPCount = Integer.parseInt(pCountString); // It's pretty reliable this will always be a number
-                joinSign.setLine(3, currPCount + 1 + "/" + gameMethods.getMaxPlayersPergame());
-                joinSign.update();
+                boolean added = gameMethods.addPlayerToGame(player, currArena);
+                if(added) {
+
+                    // Update the sign
+                    String pCountString = joinSign.getLine(3).split("/")[0];
+                    int currPCount = Integer.parseInt(pCountString); // It's pretty reliable this will always be a number
+                    joinSign.setLine(3, currPCount + 1 + "/" + gameMethods.getMaxPlayersPergame());
+                    joinSign.update();
+                }
             }
         }
     }
