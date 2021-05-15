@@ -47,6 +47,10 @@ public class GameMethods {
             player.sendMessage(prefix + "You appear to already be in a game (contact an admin if you believe this is a problem).");
             return false;
         }
+        if(playersInGames.size()  >= getMaxPlayersPergame()){
+            player.sendMessage(prefix + "Sorry, that game is currently full!");
+            return false;
+        }
         if(arena == null){
             player.sendMessage(prefix + ChatColor.RED + "This arena doesn't seem to be set up properly. Please contact a staff member!");
             return false;
