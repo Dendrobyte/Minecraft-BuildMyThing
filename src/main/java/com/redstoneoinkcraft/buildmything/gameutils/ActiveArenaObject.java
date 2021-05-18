@@ -53,6 +53,11 @@ public class ActiveArenaObject {
         return spectators;
     }
 
+    // Return whether or not a player is in an arena
+    public boolean isPlayerInArena(Player player){
+        return activePlayers.keySet().contains(player);
+    }
+
     // Return the arena's current state
     public ArenaStates getCurrentState(){
         return currentState;
@@ -177,6 +182,17 @@ public class ActiveArenaObject {
             // Automatically open voting inventory
             IngameVoteInventory.getInstance().openInventory(player);
         }
+
+    }
+
+    // Remove player from game, whether they be kicked, leaving, or game ending
+    public void removePlayerFromArena(Player playerToRemove){
+        // TODO: :)
+
+        // Reset timer if game is empty
+        if(playerQueue.size() == 0){
+            endGame();
+        }
     }
 
     // Initiate the game
@@ -239,16 +255,6 @@ public class ActiveArenaObject {
         // Restart the queue and builder stuff (more or less totally irrelevant to other things and can operate on its own)
         startQueue();
         incrCurrentRound();
-    }
-
-    // Remove player from game, whether they be kicked, leaving, or game ending
-    public void removePlayerFromArena(Player playerToRemove){
-        // TODO: :)
-
-        // Reset timer if game is empty
-        if(playerQueue.size() == 0){
-            endGame();
-        }
     }
 
     // Wrap up the game

@@ -36,6 +36,7 @@ public class Main extends JavaPlugin {
         Bukkit.getServer().getPluginManager().registerEvents(new JoiningListeners(), this);
         Bukkit.getServer().getPluginManager().registerEvents(new CommandListeners(), this);
         Bukkit.getServer().getPluginManager().registerEvents(new BlockBreakListener(), this);
+        Bukkit.getServer().getPluginManager().registerEvents(new VotingInvListener(), this);
 
         // Get commands
         getCommand("buildmything").setExecutor(new BMTCommand());
