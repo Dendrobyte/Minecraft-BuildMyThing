@@ -128,12 +128,8 @@ public class ActiveArenaObject {
         this.inUse = inUse;
     }
 
-    public Sign getJoinSign(){
-        return (Sign)joinSignLocation.getBlock().getState();
-    }
-
-    public void updateJoinSign(){
-        Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> getJoinSign().update());
+    public Location getJoinSignLocation(){
+        return joinSignLocation;
     }
 
     // Methods for the game timer (before first round starts)
@@ -199,8 +195,9 @@ public class ActiveArenaObject {
     public void initGame(){
 
         // Change the join sign
-        getJoinSign().setLine(2, ChatColor.GREEN + "ACTIVE");
-        updateJoinSign();
+        Sign joinSign = (Sign)getJoinSignLocation().getBlock().getState();
+        joinSign.setLine(2, ChatColor.GREEN + "ACTIVE");
+        joinSign.update();
 
         // Set up proper data
         currentState = ArenaStates.ACTIVE;
@@ -244,6 +241,13 @@ public class ActiveArenaObject {
         currentBuilder.setGameMode(GameMode.ADVENTURE);
     }
 
+    // Send a message to all users in the arena
+    public void broadcastMessage(String msg){
+        for(Player playerInGame : activePlayers.keySet()){
+            playerInGame.sendMessage(prefix + ChatColor.RED + ChatColor.BOLD + "GAME BROADCAST " + ChatColor.GRAY + ChatColor.ITALIC + msg);
+        }
+    }
+
     // Go ahead and start the next round (called when all spectators have built)
     public void startNextRound(){
         if(currentRound == maxRound){
@@ -266,19 +270,22 @@ public class ActiveArenaObject {
         // Remove each player from the game and bring them to minigame spawn
         for(Player player : playerQueue){
             removePlayerFromArena(player);
+            GameMethods.getInstance().removePlayerFromGame(player, this);
+            player.sendMessage(prefix + ChatColor.GRAY + ChatColor.ITALIC + "You have been removed from the game.");
         }
 
         // Clear up data
         currentState = ArenaStates.WAITING;
-        getJoinSign().setLine(2, ChatColor.WHITE + "WAITING");
-        getJoinSign().setLine(3, "0/" + maxPlayers);
-        getJoinSign().update();
+        Sign joinSign = (Sign)getJoinSignLocation().getBlock().getState();
+        joinSign.setLine(2, "" + ChatColor.GRAY + ChatColor.ITALIC + "WAITING");
+        joinSign.setLine(3, "0/" + maxPlayers);
+        joinSign.update();
+        System.out.println(joinSign.getLine(2) + " " + joinSign.getLine(3));
         activePlayers.clear();
         playerQueue.clear();
         currentRound = 0;
-        timer.cancel();
-        timer = new ArenaTimer(this);
-
+        //timer.cancel();
+        //timer = new ArenaTimer(this);
     }
 
 }
