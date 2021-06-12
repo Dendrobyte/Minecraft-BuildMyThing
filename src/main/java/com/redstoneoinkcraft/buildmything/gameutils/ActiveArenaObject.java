@@ -147,6 +147,7 @@ public class ActiveArenaObject {
         playerQueue.add(player);
         activePlayers.put(player, PlayerStates.WAITING);
         player.teleport(getLobbyLoc());
+        voteMachine.addPlayerToVoteStorage(player);
 
         // Calc things to start the game
         if(currentState == ArenaStates.WAITING){
@@ -187,6 +188,8 @@ public class ActiveArenaObject {
     // Remove player from game, whether they be kicked, leaving, or game ending
     public void removePlayerFromArena(Player playerToRemove){
         // TODO: :)
+        // Clearing their vote count properly (make a new method for this in the vote machine class)
+        // Rest of the normal stuff
 
         // Reset timer if game is empty
         if(playerQueue.size() == 0){

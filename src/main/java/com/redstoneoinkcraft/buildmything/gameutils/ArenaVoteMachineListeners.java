@@ -48,13 +48,31 @@ public class ArenaVoteMachineListeners implements Listener {
             // TODO: Future enhancements and stuff
         }
 
-        else if(clickedItem.getType().equals(invItems[3])) { // Exit the menu
-            player.getOpenInventory().close();
+        else if(clickedItem.getType().equals(invItems[3])) { // Leave the game
+            // TODO: Remove player from game/lobby
         }
 
         // Handle clicking of paper
         else if(clickedItem.getType().equals(Material.PAPER)){
-            // TODO: Voting stuff goes here. All information in lore. See ArenaVoteMachine class for more info, maybe just make methods in there.
+            // TODO: Sort out whether or not player has already voted
+            // Get required information from the item
+            String strippedItemName = ChatColor.stripColor(clickedItem.getItemMeta().getDisplayName());
+            int voteNum = Integer.parseInt(strippedItemName.substring(0, strippedItemName.indexOf(" "))); // Number will always be first
+            String voteType = clickedItem.getItemMeta().getLore().get(1);
+            if(ChatColor.stripColor(voteType).equalsIgnoreCase("VM-TPR")){
+                arena.getVoteMachine().doPlayerVote(player, 1, voteNum);
+
+                // Open the original inventory and send a message saying they voted
+                player.sendMessage(prefix + "You voted for " + ChatColor.GOLD + ChatColor.BOLD + voteNum + ChatColor.getLastColors(prefix) + " seconds per round.");
+                player.openInventory(arena.getVoteMachine().getVoteInventory());
+            } else if(ChatColor.stripColor(voteType).equalsIgnoreCase("VM-RN")){
+                arena.getVoteMachine().doPlayerVote(player, 0, voteNum);
+
+                // Open the original inventory and send a message saying they voted
+                player.sendMessage(prefix + "You voted for " + ChatColor.GOLD + ChatColor.BOLD + voteNum + ChatColor.getLastColors(prefix) + " game rounds.");
+                player.openInventory(arena.getVoteMachine().getVoteInventory());
+            }
+
         }
     }
 

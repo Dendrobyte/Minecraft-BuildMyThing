@@ -3,17 +3,14 @@ package com.redstoneoinkcraft.buildmything.gameutils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * BuildMyThing created/started by markb (Mobkinz78/Dendrobyte)
@@ -26,6 +23,10 @@ public class ArenaVoteMachine implements Listener {
     private Inventory voteInventory;
     private int roundNumber;
     private int timePerRound;
+
+    public Inventory getVoteInventory(){
+        return voteInventory;
+    }
 
     public int getRoundNumber() {
         return roundNumber;
@@ -53,7 +54,7 @@ public class ArenaVoteMachine implements Listener {
             // Clock to vote for length of each round
             ItemStack clock = new ItemStack(invItems[0]);
             ItemMeta clockMeta = clock.getItemMeta();
-            clockMeta.setDisplayName("" + ChatColor.GOLD + "Vote for Time per Round");
+            clockMeta.setDisplayName("" + ChatColor.GOLD + "Vote for Time Per Round");
             clock.setItemMeta(clockMeta);
             voteInventory.setItem(1, clock);
         }
@@ -70,16 +71,17 @@ public class ArenaVoteMachine implements Listener {
             ItemStack netherstar = new ItemStack(invItems[2]);
             ItemMeta netherstarMeta = netherstar.getItemMeta();
             netherstarMeta.setDisplayName("" + ChatColor.DARK_PURPLE + "Vote for Special Round Features");
-            ArrayList<String> netherStarLore = new ArrayList<String>(1);
-            netherStarLore.add("" + ChatColor.DARK_RED + ChatColor.ITALIC + "No enhancements here yet. Wait for beta!");
+            ArrayList<String> netherStarLore = new ArrayList<>(1);
+            netherStarLore.add("" + ChatColor.RED + ChatColor.ITALIC + "No enhancements here yet. Wait for beta!");
             netherstarMeta.setLore(netherStarLore);
+            netherstar.setItemMeta(netherstarMeta);
             voteInventory.setItem(5, netherstar);
         }
         {
             // Barrier to exit... I guess, why not
             ItemStack barrier = new ItemStack(invItems[3]);
             ItemMeta barrierMeta = barrier.getItemMeta();
-            barrierMeta.setDisplayName("" + ChatColor.RED + "Exit Vote Menu");
+            barrierMeta.setDisplayName("" + ChatColor.RED + ChatColor.BOLD + "Leave Lobby");
             barrier.setItemMeta(barrierMeta);
             voteInventory.setItem(7, barrier);
         }
@@ -102,7 +104,29 @@ public class ArenaVoteMachine implements Listener {
      * If a user votes, and they are in this list, we decr based on what they previous voted on then incr their new change.
      * If they aren't in the list, do nothing. If they are, any values set to -1 mean they haven't voted on that thing.
      */
-    private HashMap<Player, Integer[]> userVoteStorage = new HashMap<>();
+    private HashMap<Player, int[]> userVoteStorage = new HashMap<Player, int[]>();
+
+    public void addPlayerToVoteStorage(Player player){
+        userVoteStorage.put(player, new int[]{-1, -1});
+    }
+
+    // Method to handle player voting (there is probably a much better way to do voting?)
+    // Future note: Overload method with non-int if voting differs
+    public void doPlayerVote(Player voter, int voteStorageIndex, int voteValue){
+        boolean hasUserVoted = userVoteStorage.get(voter)[voteStorageIndex] != -1; // True if user has voted
+
+        if(voteStorageIndex == 0){ // Handle round number votes
+            if(hasUserVoted) decrRoundNumberVotes(userVoteStorage.get(voter)[voteStorageIndex]);
+            incrRoundNumberVotes(voteValue);
+        }
+        if(voteStorageIndex == 1) { // Handle time per round votes
+            if(hasUserVoted) decrTimePerRoundVotes(userVoteStorage.get(voter)[voteStorageIndex]);
+            incrTimePerRoundVotes(voteValue);
+        }
+
+        // Set the user's new vote value
+        userVoteStorage.get(voter)[voteStorageIndex] = voteValue;
+    }
 
     private HashMap<Integer, Integer> roundNumberVotes = new HashMap<Integer, Integer>() {
         {
