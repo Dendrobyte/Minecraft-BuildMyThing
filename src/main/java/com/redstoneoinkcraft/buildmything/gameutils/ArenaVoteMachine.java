@@ -45,7 +45,7 @@ public class ArenaVoteMachine implements Listener {
     }
 
     // List of inventory items so we can easily access it in the listener class
-    public static Material[] invItems = new Material[]{Material.CLOCK, Material.STONE_BUTTON, Material.NETHER_STAR, Material.BARRIER};
+    public static Material[] invItems = new Material[]{Material.CLOCK, Material.BOOK, Material.NETHER_STAR, Material.BARRIER};
 
     public ArenaVoteMachine() {
         // Create the inventory itself
