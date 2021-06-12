@@ -3,6 +3,9 @@ package com.redstoneoinkcraft.buildmything.commands;
 import com.redstoneoinkcraft.buildmything.creationutils.CreationStates;
 import com.redstoneoinkcraft.buildmything.Main;
 import com.redstoneoinkcraft.buildmything.creationutils.CreationMethods;
+import com.redstoneoinkcraft.buildmything.gameutils.ActiveArenaObject;
+import com.redstoneoinkcraft.buildmything.gameutils.ArenaStates;
+import com.redstoneoinkcraft.buildmything.gameutils.GameMethods;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -18,6 +21,7 @@ import org.bukkit.entity.Player;
 public class BMTCommand implements CommandExecutor {
 
     String prefix = Main.getInstance().getPrefix();
+    GameMethods utils = GameMethods.getInstance();
 
     // TODO: Refactor all permissions from a permissions class since they may be used in multiple locations
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
@@ -32,7 +36,17 @@ public class BMTCommand implements CommandExecutor {
                 // TODO: Get arena by player and have them leave
             }
             if(args[0].equalsIgnoreCase("vote")){
-                // TODO: Open the voting menu for a player if they are in a game (voting managed by what arena the inventory belongs to)
+                ActiveArenaObject arena = utils.getArenaByPlayer(player);
+                if(arena == null){
+                    player.sendMessage(prefix + ChatColor.RED + "You're not in an arena...");
+                } else {
+                    if(arena.getCurrentState() != ArenaStates.WAITING){
+                        player.sendMessage(prefix + "You can only vote when a game has not yet started.");
+                    } else {
+                        arena.getVoteMachine().openInventory(player);
+                        player.sendMessage(prefix + "Opening voting inventory...");
+                    }
+                }
             }
         }
 
@@ -82,11 +96,20 @@ public class BMTCommand implements CommandExecutor {
             if (args.length == 0) {
                 player.sendMessage("" + ChatColor.DARK_AQUA + "---- " + ChatColor.DARK_PURPLE + "Event Management Commands" + ChatColor.DARK_AQUA + " ----");
                 player.sendMessage("" + ChatColor.DARK_PURPLE + "/bmt forcestart" + ChatColor.DARK_AQUA + " - Force start the game you are in");
-                // TODO (see below)
-                // The reason we have this is so that event managers can put spins on the rounds and whatnot, like challenges or speed rounds
+                // Should be an admin command, but could be useful so whatever
+                player.sendMessage("" + ChatColor.DARK_PURPLE + "/bmt forcestop" + ChatColor.DARK_AQUA + " - Force stop the game you are in");
+                // TODO: The reason we have this is so that event managers can put spins on the rounds and whatnot, like challenges or speed rounds
                 player.sendMessage("" + ChatColor.DARK_PURPLE + "/bmt set <round_number> <round_time>" + ChatColor.DARK_AQUA + " - Force/outvote the game parameters");
             }
             if (args.length > 0) {
+                if(args[0].equalsIgnoreCase("forcestart")){
+                    // TODO: Force start the arena
+                }
+                else if(args[0].equalsIgnoreCase("forcestop")){
+                    // Useful for testing purposes mainly
+                    utils.getArenaByPlayer(player).broadcastMessage("The game is being force stopped by " + player.getName() + "!");
+                    utils.getArenaByPlayer(player).endGame();
+                }
                 return true;
             }
         }

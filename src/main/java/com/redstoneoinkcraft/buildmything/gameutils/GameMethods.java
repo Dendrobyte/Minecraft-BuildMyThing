@@ -40,8 +40,19 @@ public class GameMethods {
         return null;
     }
 
+    public ActiveArenaObject getArenaByPlayer(Player player){
+        if(!playersInGames.contains(player)) return null;
+
+        for (ActiveArenaObject arena : loadedArenas){
+            if(arena.isPlayerInArena(player)) return arena;
+        }
+
+        return null; // We should never hit this line, but we do need it
+    }
+
     // Little wrapper methods of sorts
     ArrayList<Player> playersInGames = new ArrayList<>(2);
+
     public boolean addPlayerToGame(Player player, ActiveArenaObject arena){
         if(playersInGames.contains(player)){
             player.sendMessage(prefix + "You appear to already be in a game (contact an admin if you believe this is a problem).");
