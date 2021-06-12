@@ -1,13 +1,11 @@
 package com.redstoneoinkcraft.buildmything.gameutils;
 
 import com.redstoneoinkcraft.buildmything.Main;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 
 import java.util.*;
 
@@ -32,6 +30,7 @@ public class ActiveArenaObject {
     private int currentRound = 0;
     boolean inUse = false;
     private ArenaStates currentState = ArenaStates.WAITING;
+    private ArenaVoteMachine voteMachine = new ArenaVoteMachine();
 
     /* Getters specifically for fields we'll need to access in other classes */
 
@@ -132,6 +131,10 @@ public class ActiveArenaObject {
         return joinSignLocation;
     }
 
+    public ArenaVoteMachine getVoteMachine(){
+        return voteMachine;
+    }
+
     // Methods for the game timer (before first round starts)
     private int adjustTimeUntilStart(int seconds){
         return timer.timeUntilStart = seconds;
@@ -149,14 +152,14 @@ public class ActiveArenaObject {
         if(currentState == ArenaStates.WAITING){
             // These are not announced, as a vote will override them at the very end of the waiting phase
             if(activePlayers.size() == 2){
-                setMaxRound(5);
-                setRoundTime(60);
+                voteMachine.setRoundNumber(5);
+                voteMachine.setTimePerRound(60);
                 // Start the game timer
                 timer.runTaskTimer(Main.getInstance(), 0, 20);
             }
             else if(activePlayers.size() == 5){
-                setMaxRound(3);
-                setRoundTime(30);
+                voteMachine.setRoundNumber(3);
+                voteMachine.setTimePerRound(30);
             }
             // Give the player at least a few seconds to vote
             else if(activePlayers.size() > 5){
@@ -176,7 +179,7 @@ public class ActiveArenaObject {
                     player.sendMessage(prefix + "Time left 'til game start: " + ChatColor.GOLD + ChatColor.BOLD + timer.timeUntilStart);
 
             // Automatically open voting inventory
-            IngameVoteInventory.getInstance().openInventory(player);
+            voteMachine.openInventory(player);
         }
 
     }
@@ -202,6 +205,10 @@ public class ActiveArenaObject {
         // Set up proper data
         currentState = ArenaStates.ACTIVE;
         timer.gameStarted = true;
+
+        // Set final values of round information
+        setMaxRound(voteMachine.getRoundNumber());
+        setRoundTime(voteMachine.getTimePerRound());
         timer.runTaskTimer(Main.getInstance(), 0, 20);
     }
 
@@ -280,10 +287,11 @@ public class ActiveArenaObject {
         joinSign.setLine(2, "" + ChatColor.GRAY + ChatColor.ITALIC + "WAITING");
         joinSign.setLine(3, "0/" + maxPlayers);
         joinSign.update();
-        System.out.println(joinSign.getLine(2) + " " + joinSign.getLine(3));
         activePlayers.clear();
         playerQueue.clear();
         currentRound = 0;
+        voteMachine = new ArenaVoteMachine();
+        // TODO: Uncomment below. Commented out while testing so I could easily forcestop the arena.
         //timer.cancel();
         //timer = new ArenaTimer(this);
     }

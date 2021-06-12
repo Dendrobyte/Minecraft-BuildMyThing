@@ -3,6 +3,8 @@ package com.redstoneoinkcraft.buildmything.commands;
 import com.redstoneoinkcraft.buildmything.creationutils.CreationStates;
 import com.redstoneoinkcraft.buildmything.Main;
 import com.redstoneoinkcraft.buildmything.creationutils.CreationMethods;
+import com.redstoneoinkcraft.buildmything.gameutils.ActiveArenaObject;
+import com.redstoneoinkcraft.buildmything.gameutils.ArenaStates;
 import com.redstoneoinkcraft.buildmything.gameutils.GameMethods;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -34,7 +36,17 @@ public class BMTCommand implements CommandExecutor {
                 // TODO: Get arena by player and have them leave
             }
             if(args[0].equalsIgnoreCase("vote")){
-                // TODO: Open the voting menu for a player if they are in a game (voting managed by what arena the inventory belongs to)
+                ActiveArenaObject arena = utils.getArenaByPlayer(player);
+                if(arena == null){
+                    player.sendMessage(prefix + ChatColor.RED + "You're not in an arena...");
+                } else {
+                    if(arena.getCurrentState() != ArenaStates.WAITING){
+                        player.sendMessage(prefix + "You can only vote when a game has not yet started.");
+                    } else {
+                        arena.getVoteMachine().openInventory(player);
+                        player.sendMessage(prefix + "Opening voting inventory...");
+                    }
+                }
             }
         }
 
@@ -95,8 +107,8 @@ public class BMTCommand implements CommandExecutor {
                 }
                 else if(args[0].equalsIgnoreCase("forcestop")){
                     // Useful for testing purposes mainly
-                    utils.getArenaByPlayerName(player).broadcastMessage("The game is being force stopped by " + player.getName() + "!");
-                    utils.getArenaByPlayerName(player).endGame();
+                    utils.getArenaByPlayer(player).broadcastMessage("The game is being force stopped by " + player.getName() + "!");
+                    utils.getArenaByPlayer(player).endGame();
                 }
                 return true;
             }

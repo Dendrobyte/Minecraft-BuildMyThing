@@ -40,7 +40,7 @@ public class GameMethods {
         return null;
     }
 
-    public ActiveArenaObject getArenaByPlayerName(Player player){
+    public ActiveArenaObject getArenaByPlayer(Player player){
         if(!playersInGames.contains(player)) return null;
 
         for (ActiveArenaObject arena : loadedArenas){
