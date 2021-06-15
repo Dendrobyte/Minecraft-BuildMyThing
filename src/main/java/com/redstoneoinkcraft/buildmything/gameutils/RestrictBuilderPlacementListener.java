@@ -13,29 +13,36 @@ public class RestrictBuilderPlacementListener implements Listener {
 
     @EventHandler
     public void onBuilderPlaceEvent(BlockPlaceEvent event){
-        if(!handleBothEvents(event.getPlayer(), event.getBlock().getLocation())){
+        if(playerCannotBuild(event.getPlayer(), event.getBlock().getLocation())){
             event.setCancelled(true);
         }
     }
 
     @EventHandler
     public void onBuilderBreakEvent(BlockBreakEvent event){
-        if(!handleBothEvents(event.getPlayer(), event.getBlock().getLocation())){
+        if(playerCannotBuild(event.getPlayer(), event.getBlock().getLocation())){
             event.setCancelled(true);
         }
     }
 
     // Both of the above events lead to the same messages and restrictions, so methodizing... ya!
-    // Inverted because it makes more sense readability-wise
-    public boolean handleBothEvents(Player builder, Location blockLocation) {
+    // Apologies for the weird double negative happening here
+    public boolean playerCannotBuild(Player builder, Location blockLocation) {
         ActiveArenaObject arena = utils.getArenaByPlayer(builder);
         if(arena == null) return false;
 
         if(arena.getCurrentBuilder().equals(builder)){
-            return arena.isInBuildRegion(blockLocation);
+            if(arena.isInBuildRegion(blockLocation)){
+                System.out.println("Within build region- player is all good");
+                return false;
+            } else {
+                System.out.println("Outside of build region- player has been denied");
+                return true;
+            }
+            //return arena.isInBuildRegion(blockLocation);
         }
 
-        return true;
+        return false;
     }
 
 }

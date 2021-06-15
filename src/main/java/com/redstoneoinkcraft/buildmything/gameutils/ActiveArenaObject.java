@@ -234,9 +234,9 @@ public class ActiveArenaObject {
             getActivePlayers().put(player, PlayerStates.SPECTATING); // Set to spectator
         }
         broadcastMessage("Build My Thing is about to start... get building, and get guessing!");
-        broadcastMessage("" + ChatColor.RED + ChatColor.ITALIC + "The game is currently in ALPHA. If you notice any bugs, please report them" +
-                "to a staff member. Send screenshots if possible, recordings if you can, and steps on how to re-create that bug to the best of your ability." +
-                ChatColor.GREEN + "Thanks! We really appreciate your help in making this game a bit better.");
+        broadcastMessage("" + ChatColor.RED + ChatColor.ITALIC + "The game is currently in ALPHA. " + ChatColor.WHITE + "If you notice any bugs, please report them. " +
+                "Send screenshots, recordings if you can, and steps on how to re-create that bug to the best of your ability." +
+                ChatColor.GREEN + " We really appreciate your help in making this game a bit better.");
         currentRound = 0; // Start as zero since it increments in the method
         startNextRound();
 
@@ -379,9 +379,9 @@ public class ActiveArenaObject {
                 };
 
         // Check if the attempted build location is within the bounds
-        if(loc.getBlockX() > bounds[0] && loc.getBlockX() < bounds[1]){
-            if(loc.getBlockY() > bounds[2] && loc.getBlockY() < bounds[3]){
-                return loc.getBlockZ() > bounds[4] && loc.getBlockZ() < bounds[5];
+        if(loc.getBlockX() >= bounds[0] && loc.getBlockX() <= bounds[1]){
+            if(loc.getBlockY() >= bounds[2] && loc.getBlockY() <= bounds[3]){
+                return loc.getBlockZ() >= bounds[4] && loc.getBlockZ() <= bounds[5];
             }
         }
         return false;

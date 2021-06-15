@@ -56,16 +56,12 @@ public class BMTCommand implements CommandExecutor {
                     arena.initGame();
                     player.sendMessage(prefix + ChatColor.RED + "DEV COMMAND: Arena state changed to active.");
                 }
-                if(arena.getActivePlayers().get(player) == PlayerStates.WAITING){
-                    arena.getActivePlayers().put(player, PlayerStates.SPECTATING);
-                    player.sendMessage(prefix + ChatColor.RED + "DEV COMMAND: Your state has gone from WAITING to SPECTATING");
-                }
                 if(arena.getActivePlayers().get(player) == PlayerStates.SPECTATING){
-                    arena.getActivePlayers().put(player, PlayerStates.BUILDING);
+                    arena.setSpectatorToBuilder(player);
                     player.sendMessage(prefix + ChatColor.RED + "DEV COMMAND: Your state has gone from SPECTATING to BUILDING");
                 }
-                if(arena.getActivePlayers().get(player) == PlayerStates.BUILDING){
-                    arena.getActivePlayers().put(player, PlayerStates.SPECTATING);
+                else if(arena.getActivePlayers().get(player) == PlayerStates.BUILDING){
+                    arena.resetBuilderToSpectator(player);
                     player.sendMessage(prefix + ChatColor.RED + "DEV COMMAND: Your state has gone from BUILDING to SPECTATING");
                 }
             }
