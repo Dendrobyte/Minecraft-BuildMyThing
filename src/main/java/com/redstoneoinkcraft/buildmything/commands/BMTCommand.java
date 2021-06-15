@@ -6,6 +6,7 @@ import com.redstoneoinkcraft.buildmything.creationutils.CreationMethods;
 import com.redstoneoinkcraft.buildmything.gameutils.ActiveArenaObject;
 import com.redstoneoinkcraft.buildmything.gameutils.ArenaStates;
 import com.redstoneoinkcraft.buildmything.gameutils.GameMethods;
+import com.redstoneoinkcraft.buildmything.gameutils.PlayerStates;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -46,6 +47,26 @@ public class BMTCommand implements CommandExecutor {
                         arena.getVoteMachine().openInventory(player);
                         player.sendMessage(prefix + "Opening voting inventory...");
                     }
+                }
+            }
+            // TODO: DEV COMMAND ONLY. DELETE WHEN BETA.
+            if(args[0].equalsIgnoreCase("changemode")){
+                ActiveArenaObject arena = utils.getArenaByPlayer(player);
+                if(arena.getCurrentState() == ArenaStates.WAITING){
+                    arena.initGame();
+                    player.sendMessage(prefix + ChatColor.RED + "DEV COMMAND: Arena state changed to active.");
+                }
+                if(arena.getActivePlayers().get(player) == PlayerStates.WAITING){
+                    arena.getActivePlayers().put(player, PlayerStates.SPECTATING);
+                    player.sendMessage(prefix + ChatColor.RED + "DEV COMMAND: Your state has gone from WAITING to SPECTATING");
+                }
+                if(arena.getActivePlayers().get(player) == PlayerStates.SPECTATING){
+                    arena.getActivePlayers().put(player, PlayerStates.BUILDING);
+                    player.sendMessage(prefix + ChatColor.RED + "DEV COMMAND: Your state has gone from SPECTATING to BUILDING");
+                }
+                if(arena.getActivePlayers().get(player) == PlayerStates.BUILDING){
+                    arena.getActivePlayers().put(player, PlayerStates.SPECTATING);
+                    player.sendMessage(prefix + ChatColor.RED + "DEV COMMAND: Your state has gone from BUILDING to SPECTATING");
                 }
             }
         }

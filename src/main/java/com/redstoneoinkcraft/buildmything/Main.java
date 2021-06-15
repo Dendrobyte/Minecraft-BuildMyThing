@@ -4,6 +4,7 @@ import com.redstoneoinkcraft.buildmything.commands.BMTCommand;
 import com.redstoneoinkcraft.buildmything.gameutils.ActiveArenaObject;
 import com.redstoneoinkcraft.buildmything.gameutils.ArenaVoteMachineListeners;
 import com.redstoneoinkcraft.buildmything.gameutils.GameMethods;
+import com.redstoneoinkcraft.buildmything.gameutils.RestrictBuilderPlacementListener;
 import com.redstoneoinkcraft.buildmything.listeners.*;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -39,6 +40,7 @@ public class Main extends JavaPlugin {
         Bukkit.getServer().getPluginManager().registerEvents(new BlockBreakListener(), this);
         Bukkit.getServer().getPluginManager().registerEvents(new VotingInvListener(), this);
         Bukkit.getServer().getPluginManager().registerEvents(new ArenaVoteMachineListeners(), this);
+        Bukkit.getServer().getPluginManager().registerEvents(new RestrictBuilderPlacementListener(), this);
 
         // Get commands
         getCommand("buildmything").setExecutor(new BMTCommand());
