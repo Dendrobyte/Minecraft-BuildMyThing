@@ -21,19 +21,31 @@ public class ArenaTimer extends BukkitRunnable {
         this.arena = arena;
     }
 
+    // Overloaded constructor, mainly for testing
+    ArenaTimer(ActiveArenaObject arena, int waitTime){
+        this.arena = arena;
+        this.timeUntilStart = waitTime;
+    }
+
     @Override
     public void run() {
         // Do things based on the fact the game has not started
         if(!gameStarted){
             timeUntilStart--;
-            return;
-        }
+            if (roundTimer == 0) {
+                cancel();
+                arena.initGame();
+            }
+        } else {
 
-        // Timers for within the game, i.e. rounds
-        roundTimer--;
-        if(roundTimer == 0){
-            cancel();
-            arena.initGame();
+            // Timers for within the game, i.e. rounds
+            roundTimer--;
+            if (roundTimer == 0) {
+                cancel();
+                // TODO: Start new round 'n stuff
+            } else {
+                // TODO: Do the round stuff (create a method in the arena class to make this one remain simple
+            }
         }
     }
 }
