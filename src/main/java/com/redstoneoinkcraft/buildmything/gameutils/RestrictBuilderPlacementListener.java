@@ -32,13 +32,7 @@ public class RestrictBuilderPlacementListener implements Listener {
         if(arena == null) return false;
 
         if(arena.getCurrentBuilder().equals(builder)){
-            if(arena.isInBuildRegion(blockLocation)){
-                System.out.println("Within build region- player is all good");
-                return false;
-            } else {
-                System.out.println("Outside of build region- player has been denied");
-                return true;
-            }
+            return !arena.isInBuildRegion(blockLocation);
             //return arena.isInBuildRegion(blockLocation);
         }
 
