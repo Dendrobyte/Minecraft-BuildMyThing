@@ -10,7 +10,10 @@ import org.bukkit.event.Listener;
  */
 public class CommandListeners implements Listener {
 
-    /* All listeners related to commands, such as preprocess events to cancel any use of commands not starting with "bmt" */
+    /*
+     * All listeners related to commands, such as preprocess events to cancel any
+     * use of commands not starting with "bmt"
+     */
     // TODO: Command pre-process event
 
 }

@@ -25,61 +25,69 @@ public class CreationListeners implements Listener {
     String prefix = Main.getInstance().getPrefix();
 
     @EventHandler
-    public void playerClicksWithCreationWand(PlayerInteractEvent event){
+    public void playerClicksWithCreationWand(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        if(event.getHand() == EquipmentSlot.OFF_HAND) return;
-        if(creationMethods.getPlayerCreationState(player) == null) return;
+        if (event.getHand() == EquipmentSlot.OFF_HAND)
+            return;
+        if (creationMethods.getPlayerCreationState(player) == null)
+            return;
         ItemMeta itemInMainHand = player.getInventory().getItemInMainHand().getItemMeta();
-        if(itemInMainHand == null) return;
-        if(itemInMainHand.getDisplayName().equalsIgnoreCase(creationMethods.getCreationWand().getItemMeta().getDisplayName())
-                && !itemInMainHand.isUnbreakable()) return;
+        if (itemInMainHand == null)
+            return;
+        if (itemInMainHand.getDisplayName()
+                .equalsIgnoreCase(creationMethods.getCreationWand().getItemMeta().getDisplayName())
+                && !itemInMainHand.isUnbreakable())
+            return;
 
         event.setCancelled(true);
-        if(creationMethods.getPlayerCreationState(player) == CreationStates.ARENA_SPAWN){
+        if (creationMethods.getPlayerCreationState(player) == CreationStates.ARENA_SPAWN) {
             // Instantiate an arena object with a spawn location
             CreationArenaObject newArena = new CreationArenaObject(event.getClickedBlock().getLocation());
             creationMethods.setPlayerCreationArena(player, newArena);
 
             creationMethods.changeCreationState(player, CreationStates.BUILD_REGION);
-            player.sendMessage(prefix + "Please select the corners of the " + ChatColor.GOLD + ChatColor.BOLD + "BUILD REGION");
-            player.sendMessage(prefix + ChatColor.DARK_PURPLE + "LEFT CLICK" + ChatColor.GRAY + ChatColor.ITALIC + " selects one corner, " + ChatColor.DARK_PURPLE +
+            player.sendMessage(
+                    prefix + "Please select the corners of the " + ChatColor.GOLD + ChatColor.BOLD + "BUILD REGION");
+            player.sendMessage(prefix + ChatColor.DARK_PURPLE + "LEFT CLICK" + ChatColor.GRAY + ChatColor.ITALIC
+                    + " selects one corner, " + ChatColor.DARK_PURPLE +
                     "RIGHT CLICK" + ChatColor.GRAY + ChatColor.ITALIC + " selects the other corner.");
-            player.sendMessage(prefix + ChatColor.DARK_PURPLE + "SNEAK + LEFT CLICK " + ChatColor.GRAY + ChatColor.ITALIC + "when you're done");
+            player.sendMessage(prefix + ChatColor.DARK_PURPLE + "SNEAK + LEFT CLICK " + ChatColor.GRAY
+                    + ChatColor.ITALIC + "when you're done");
 
-        }
-        else if (creationMethods.getPlayerCreationState(player) == CreationStates.BUILD_REGION){
+        } else if (creationMethods.getPlayerCreationState(player) == CreationStates.BUILD_REGION) {
             CreationArenaObject arena = creationMethods.getPlayerCreationArena(player);
-            if (event.getAction() == Action.LEFT_CLICK_BLOCK){
+            if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
                 arena.setBuildRegionCornerOne(event.getClickedBlock().getLocation());
                 player.sendMessage(prefix + ChatColor.GREEN + "Corner one set!");
-            }
-            else if (event.getAction() == Action.RIGHT_CLICK_BLOCK){
+            } else if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
                 arena.setBuildRegionCornerTwo(event.getClickedBlock().getLocation());
                 player.sendMessage(prefix + ChatColor.GREEN + "Corner two set!");
-            }
-            else if (event.getAction() == Action.LEFT_CLICK_AIR && player.isSneaking()) {
-                if(arena.getBuildRegionCornerOne() != null && arena.getBuildRegionCornerTwo() != null){
+            } else if (event.getAction() == Action.LEFT_CLICK_AIR && player.isSneaking()) {
+                if (arena.getBuildRegionCornerOne() != null && arena.getBuildRegionCornerTwo() != null) {
                     creationMethods.changeCreationState(player, CreationStates.JOIN_SIGN);
                     player.sendMessage(prefix + "Please click the " + ChatColor.GOLD + ChatColor.BOLD + "JOIN SIGN");
-                    player.sendMessage(prefix + ChatColor.GRAY + ChatColor.ITALIC + "(Nothing needs to be written on it)");
+                    player.sendMessage(
+                            prefix + ChatColor.GRAY + ChatColor.ITALIC + "(Nothing needs to be written on it)");
                     return;
                 }
-                if(arena.getBuildRegionCornerOne() == null){
-                    player.sendMessage(prefix + ChatColor.RED + ChatColor.ITALIC + "Build region corner one is not set!");
+                if (arena.getBuildRegionCornerOne() == null) {
+                    player.sendMessage(
+                            prefix + ChatColor.RED + ChatColor.ITALIC + "Build region corner one is not set!");
                 }
-                if(arena.getBuildRegionCornerTwo() == null){
-                    player.sendMessage(prefix + ChatColor.RED + ChatColor.ITALIC + "Build region corner two is not set!");
+                if (arena.getBuildRegionCornerTwo() == null) {
+                    player.sendMessage(
+                            prefix + ChatColor.RED + ChatColor.ITALIC + "Build region corner two is not set!");
                 }
             }
 
-        }
-        else if (creationMethods.getPlayerCreationState(player) == CreationStates.JOIN_SIGN){
+        } else if (creationMethods.getPlayerCreationState(player) == CreationStates.JOIN_SIGN) {
             CreationArenaObject arena = creationMethods.getPlayerCreationArena(player);
-            if(event.getClickedBlock().getType().toString().contains("SIGN")){
+            if (event.getClickedBlock().getType().toString().contains("SIGN")) {
                 arena.setJoinSignLocation(event.getClickedBlock().getLocation()); // We modify the sign later
                 creationMethods.changeCreationState(player, CreationStates.FINISH);
                 player.getInventory().remove(creationMethods.getCreationWand());
-                player.sendMessage(prefix + "Use" + ChatColor.GOLD + " /bmt finalize <name> " + ChatColor.getLastColors(prefix) + "to create your arena!");
+                player.sendMessage(prefix + "Use" + ChatColor.GOLD + " /bmt finalize <name> "
+                        + ChatColor.getLastColors(prefix) + "to create your arena!");
             } else {
                 player.sendMessage(prefix + ChatColor.RED + ChatColor.ITALIC + "Please select a sign!");
             }
