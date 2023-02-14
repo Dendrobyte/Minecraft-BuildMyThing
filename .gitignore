@@ -1,4 +1,5 @@
 # Project exclude paths
 /target/
-.vscode
-.idea
+/.idea/
+/out/
+/.vscode/
