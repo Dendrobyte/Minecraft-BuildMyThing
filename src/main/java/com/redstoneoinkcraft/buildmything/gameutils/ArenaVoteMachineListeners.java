@@ -18,8 +18,10 @@ public class ArenaVoteMachineListeners implements Listener {
     private String prefix = Main.getInstance().getPrefix();
 
     @EventHandler
-    public void onVoteMachineInventoryClick(InventoryClickEvent event){
-        if(!event.getView().getTitle().equalsIgnoreCase("" + ChatColor.DARK_PURPLE + ChatColor.BOLD + "Build My Thing - Voting")) return;
+    public void onVoteMachineInventoryClick(InventoryClickEvent event) {
+        if (!event.getView().getTitle()
+                .equalsIgnoreCase("" + ChatColor.DARK_PURPLE + ChatColor.BOLD + "Build My Thing - Voting"))
+            return;
 
         // Create a variable for the actual inventory and cancel click
         Inventory eventInventory = event.getClickedInventory();
@@ -28,48 +30,55 @@ public class ArenaVoteMachineListeners implements Listener {
         // Get the player
         Player player = (Player) event.getView().getPlayer();
 
-        // Get the arena of that player (to modify the values and get the proper ArenaVoteMachine)
+        // Get the arena of that player (to modify the values and get the proper
+        // ArenaVoteMachine)
         ActiveArenaObject arena = utils.getArenaByPlayer(player);
-        if(arena == null) return; // Shouldn't happen, but just in case
+        if (arena == null)
+            return; // Shouldn't happen, but just in case
 
         // Handle all item clicks
         ItemStack clickedItem = event.getCurrentItem();
-        if(clickedItem == null) return;
+        if (clickedItem == null)
+            return;
 
-        if(clickedItem.getType().equals(invItems[0])) { // Voting for time per round
+        if (clickedItem.getType().equals(invItems[0])) { // Voting for time per round
             player.openInventory(arena.getVoteMachine().getTimePerRoundInventory());
         }
 
-        else if(clickedItem.getType().equals(invItems[1])) { // Voting for number of rounds
+        else if (clickedItem.getType().equals(invItems[1])) { // Voting for number of rounds
             player.openInventory(arena.getVoteMachine().getRoundNumberInventory());
         }
 
-        else if(clickedItem.getType().equals(invItems[2])) { // Voting for extra enhancements for the game
+        else if (clickedItem.getType().equals(invItems[2])) { // Voting for extra enhancements for the game
             // TODO: Future enhancements and stuff
         }
 
-        else if(clickedItem.getType().equals(invItems[3])) { // Leave the game
+        else if (clickedItem.getType().equals(invItems[3])) { // Leave the game
             // TODO: Remove player from game/lobby
         }
 
         // Handle clicking of paper
-        else if(clickedItem.getType().equals(Material.PAPER)){
+        else if (clickedItem.getType().equals(Material.PAPER)) {
             // TODO: Sort out whether or not player has already voted
             // Get required information from the item
             String strippedItemName = ChatColor.stripColor(clickedItem.getItemMeta().getDisplayName());
-            int voteNum = Integer.parseInt(strippedItemName.substring(0, strippedItemName.indexOf(" "))); // Number will always be first
+            int voteNum = Integer.parseInt(strippedItemName.substring(0, strippedItemName.indexOf(" "))); // Number will
+                                                                                                          // always be
+                                                                                                          // first
             String voteType = clickedItem.getItemMeta().getLore().get(1);
-            if(ChatColor.stripColor(voteType).equalsIgnoreCase("VM-TPR")){
+            if (ChatColor.stripColor(voteType).equalsIgnoreCase("VM-TPR")) {
                 arena.getVoteMachine().doPlayerVote(player, 1, voteNum);
 
                 // Open the original inventory and send a message saying they voted
-                player.sendMessage(prefix + "You voted for " + ChatColor.GOLD + ChatColor.BOLD + voteNum + ChatColor.getLastColors(prefix) + " seconds per round.");
+                player.sendMessage(prefix + "You voted for " + ChatColor.GOLD + ChatColor.BOLD + voteNum
+                        + ChatColor.getLastColors(prefix) + " seconds per round.");
                 player.openInventory(arena.getVoteMachine().getVoteInventory());
-            } else if(ChatColor.stripColor(voteType).equalsIgnoreCase("VM-RN")){
+            } else if (ChatColor.stripColor(voteType).equalsIgnoreCase("VM-RN")) {
                 arena.getVoteMachine().doPlayerVote(player, 0, voteNum);
 
                 // Open the original inventory and send a message saying they voted
-                player.sendMessage(prefix + "You voted for " + ChatColor.GOLD + ChatColor.BOLD + voteNum + ChatColor.getLastColors(prefix) + " game rounds.");
+                player.sendMessage(prefix + "You voted for " + ChatColor.GOLD + ChatColor.BOLD + voteNum
+                        + ChatColor.getLastColors(prefix) + " game rounds.");
                 player.openInventory(arena.getVoteMachine().getVoteInventory());
             }
 
@@ -77,9 +86,11 @@ public class ArenaVoteMachineListeners implements Listener {
     }
 
     @EventHandler
-    public void onVoteInventoryClose(InventoryCloseEvent event){
-        if(event.getView().getTitle().equalsIgnoreCase("" + ChatColor.DARK_PURPLE + ChatColor.BOLD + "Build My Thing - Voting")) {
-            event.getPlayer().sendMessage(prefix + "" + ChatColor.GRAY + ChatColor.ITALIC + "You can change your vote with " + ChatColor.GOLD + "/bmt vote");
+    public void onVoteInventoryClose(InventoryCloseEvent event) {
+        if (event.getView().getTitle()
+                .equalsIgnoreCase("" + ChatColor.DARK_PURPLE + ChatColor.BOLD + "Build My Thing - Voting")) {
+            event.getPlayer().sendMessage(prefix + "" + ChatColor.GRAY + ChatColor.ITALIC
+                    + "You can change your vote with " + ChatColor.GOLD + "/bmt vote");
         }
     }
 

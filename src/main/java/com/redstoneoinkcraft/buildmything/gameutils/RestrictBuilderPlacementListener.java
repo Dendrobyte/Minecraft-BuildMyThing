@@ -33,7 +33,6 @@ public class RestrictBuilderPlacementListener implements Listener {
 
         if(arena.getCurrentBuilder().equals(builder)){
             return !arena.isInBuildRegion(blockLocation);
-            //return arena.isInBuildRegion(blockLocation);
         }
 
         return false;
