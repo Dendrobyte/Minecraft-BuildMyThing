@@ -2,7 +2,9 @@ package com.redstoneoinkcraft.buildmything;
 
 import com.redstoneoinkcraft.buildmything.commands.BMTCommand;
 import com.redstoneoinkcraft.buildmything.gameutils.ActiveArenaObject;
+import com.redstoneoinkcraft.buildmything.gameutils.ArenaVoteMachineListeners;
 import com.redstoneoinkcraft.buildmything.gameutils.GameMethods;
+import com.redstoneoinkcraft.buildmything.gameutils.RestrictBuilderPlacementListener;
 import com.redstoneoinkcraft.buildmything.listeners.*;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -22,7 +24,7 @@ public class Main extends JavaPlugin {
     private String prefix = "§8[§5Build My Thing§8]§7 ";
 
     @Override
-    public void onEnable(){
+    public void onEnable() {
         // Instantiate main instance
         instance = this;
         System.out.println(prefix + "Enabling Build My Thing v" + getDescription().getVersion() + "...");
@@ -36,13 +38,17 @@ public class Main extends JavaPlugin {
         Bukkit.getServer().getPluginManager().registerEvents(new JoiningListeners(), this);
         Bukkit.getServer().getPluginManager().registerEvents(new CommandListeners(), this);
         Bukkit.getServer().getPluginManager().registerEvents(new BlockBreakListener(), this);
+        Bukkit.getServer().getPluginManager().registerEvents(new VotingInvListener(), this);
+        Bukkit.getServer().getPluginManager().registerEvents(new ArenaVoteMachineListeners(), this);
+        Bukkit.getServer().getPluginManager().registerEvents(new RestrictBuilderPlacementListener(), this);
 
         // Get commands
         getCommand("buildmything").setExecutor(new BMTCommand());
 
         // Load all arenas
-        // TODO: Loop through arena names in the config and create them. Details filled in within the ActiveArenaObject.
-        for(String arenaName : getConfig().getConfigurationSection("arenas").getKeys(false)){
+        // TODO: Loop through arena names in the config and create them. Details filled
+        // in within the ActiveArenaObject.
+        for (String arenaName : getConfig().getConfigurationSection("arenas").getKeys(false)) {
             System.out.println("BMT -- Loading map " + arenaName);
             GameMethods.getInstance().createArena(arenaName);
             System.out.println("Loaded " + arenaName + "!");
@@ -51,32 +57,34 @@ public class Main extends JavaPlugin {
         System.out.println(prefix + "Successfully enabled Build My Thing v" + getDescription().getVersion() + "!");
     }
 
-
-    public static Main getInstance(){
+    public static Main getInstance() {
         return instance;
     }
 
-    public String getPrefix(){
+    public String getPrefix() {
         return prefix;
     }
 
     @Override
-    public void onDisable(){
+    public void onDisable() {
         System.out.println();
     }
 
-    private void createConfig(){
-        if(!getDataFolder().exists()){
+    private void createConfig() {
+        if (!getDataFolder().exists()) {
             getDataFolder().mkdirs();
         }
         // Generate default config.yml
         File configuration = new File(getDataFolder(), "config.yml");
-        if(!configuration.exists()){
-            getLogger().log(Level.INFO, "Build My Thing v" + getDescription().getVersion() + " is creating the configuration...");
+        if (!configuration.exists()) {
+            getLogger().log(Level.INFO,
+                    "Build My Thing v" + getDescription().getVersion() + " is creating the configuration...");
             saveDefaultConfig();
-            getLogger().log(Level.INFO, "Build My Thing v" + getDescription().getVersion() + " configuration has been created!");
+            getLogger().log(Level.INFO,
+                    "Build My Thing v" + getDescription().getVersion() + " configuration has been created!");
         } else {
-            getLogger().log(Level.INFO, "Build My Thing v" + getDescription().getVersion() + " configuration has been loaded.");
+            getLogger().log(Level.INFO,
+                    "Build My Thing v" + getDescription().getVersion() + " configuration has been loaded.");
         }
     }
 

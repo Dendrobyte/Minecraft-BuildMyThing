@@ -54,7 +54,7 @@ public class JoiningListeners implements Listener {
 
                     // Update the sign
                     String pCountString = joinSign.getLine(3).split("/")[0];
-                    int currPCount = Integer.parseInt(pCountString); // It's pretty reliable this will always be a number
+                    int currPCount = Integer.parseInt(pCountString); // It's pretty reliable that this will always be a number
                     joinSign.setLine(3, currPCount + 1 + "/" + gameMethods.getMaxPlayersPergame());
                     joinSign.update();
                 }

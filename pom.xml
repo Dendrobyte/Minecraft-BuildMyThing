@@ -16,8 +16,8 @@
     <repositories>
         <!-- This adds the Spigot Maven repository to the build -->
         <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+            <id>papermc</id>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
     </repositories>
 
@@ -25,16 +25,43 @@
         <!--This adds the Spigot API artifact to the build -->
         <dependency>
             <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.16.5-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
+           <artifactId>spigot-api</artifactId>
+           <version>1.19.3-R0.1-SNAPSHOT</version>
+           <scope>provided</scope>
         </dependency>
         <!-- Make sure we're on a supported version of Java-->
         <dependency>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
-            <version>3.8.1</version>
+            <version>3.10.1</version>
         </dependency>
+
     </dependencies>
 
+    <!-- This goes ahead and builds the JAR to run in your plugins directory.
+         Shows up in target by default. -->
+    <build>
+        <sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
+        <resources>
+            <resource>
+                <directory>${project.basedir}/src/main/resources</directory>
+                <includes>
+                    <include>plugin.yml</include>
+                    <!-- <include>config.yml</include> -->
+                </includes>
+            </resource>
+            </resources>
+    </build>
+
+        <profiles>
+        <!-- Specify where you want your plugin to be built.
+             Personally I store the project elsewhere.
+             mvn install -PtestServerOutputDir -->
+            <profile>
+                <id>testServerOutputDir</id>
+                <build>
+                    <directory>E:\MC TESTING SERVER (1.19.3)\plugins</directory>
+                </build>
+            </profile>
+        </profiles>
 </project>
