@@ -33,12 +33,12 @@ public class BMTCommand implements CommandExecutor {
         }
 
         Player player = (Player) sender;
+        ActiveArenaObject arena = utils.getArenaByPlayer(player);
         if (args.length > 0) {
             if (args[0].equalsIgnoreCase("leave")) {
-                // TODO: Get arena by player and have them leave
+                arena.removePlayerFromArena(player);
             }
             if (args[0].equalsIgnoreCase("vote")) {
-                ActiveArenaObject arena = utils.getArenaByPlayer(player);
                 if (arena == null) {
                     player.sendMessage(prefix + ChatColor.RED + "You're not in an arena...");
                 } else {
@@ -52,7 +52,10 @@ public class BMTCommand implements CommandExecutor {
             }
             // TODO: DEV COMMAND ONLY. DELETE WHEN BETA.
             if (args[0].equalsIgnoreCase("changemode")) {
-                ActiveArenaObject arena = utils.getArenaByPlayer(player);
+                if (arena == null) {
+                    player.sendMessage(ChatColor.ITALIC + "Someone doesn't know how to use their own dev commands...");
+                    return true;
+                }
                 if (arena.getCurrentState() == ArenaStates.WAITING) {
                     arena.initGame();
                     player.sendMessage(prefix + ChatColor.RED + "DEV COMMAND: Arena state changed to active.");

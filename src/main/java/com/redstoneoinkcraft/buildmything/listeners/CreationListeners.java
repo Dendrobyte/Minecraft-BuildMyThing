@@ -51,7 +51,7 @@ public class CreationListeners implements Listener {
             player.sendMessage(prefix + ChatColor.DARK_PURPLE + "LEFT CLICK" + ChatColor.GRAY + ChatColor.ITALIC
                     + " selects one corner, " + ChatColor.DARK_PURPLE +
                     "RIGHT CLICK" + ChatColor.GRAY + ChatColor.ITALIC + " selects the other corner.");
-            player.sendMessage(prefix + ChatColor.DARK_PURPLE + "SNEAK + LEFT CLICK " + ChatColor.GRAY
+            player.sendMessage(prefix + ChatColor.DARK_PURPLE + "SNEAK + LEFT CLICK (the air) " + ChatColor.GRAY
                     + ChatColor.ITALIC + "when you're done");
 
         } else if (creationMethods.getPlayerCreationState(player) == CreationStates.BUILD_REGION) {
@@ -63,13 +63,6 @@ public class CreationListeners implements Listener {
                 arena.setBuildRegionCornerTwo(event.getClickedBlock().getLocation());
                 player.sendMessage(prefix + ChatColor.GREEN + "Corner two set!");
             } else if (event.getAction() == Action.LEFT_CLICK_AIR && player.isSneaking()) {
-                if (arena.getBuildRegionCornerOne() != null && arena.getBuildRegionCornerTwo() != null) {
-                    creationMethods.changeCreationState(player, CreationStates.JOIN_SIGN);
-                    player.sendMessage(prefix + "Please click the " + ChatColor.GOLD + ChatColor.BOLD + "JOIN SIGN");
-                    player.sendMessage(
-                            prefix + ChatColor.GRAY + ChatColor.ITALIC + "(Nothing needs to be written on it)");
-                    return;
-                }
                 if (arena.getBuildRegionCornerOne() == null) {
                     player.sendMessage(
                             prefix + ChatColor.RED + ChatColor.ITALIC + "Build region corner one is not set!");
@@ -78,6 +71,12 @@ public class CreationListeners implements Listener {
                     player.sendMessage(
                             prefix + ChatColor.RED + ChatColor.ITALIC + "Build region corner two is not set!");
                 }
+
+                creationMethods.changeCreationState(player, CreationStates.JOIN_SIGN);
+                player.sendMessage(prefix + "Please click the " + ChatColor.GOLD + ChatColor.BOLD + "JOIN SIGN");
+                player.sendMessage(
+                        prefix + ChatColor.GRAY + ChatColor.ITALIC + "(Nothing needs to be written on it)");
+                return;
             }
 
         } else if (creationMethods.getPlayerCreationState(player) == CreationStates.JOIN_SIGN) {

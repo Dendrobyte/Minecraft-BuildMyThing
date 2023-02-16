@@ -210,11 +210,15 @@ public class ActiveArenaObject {
     }
 
     // Remove player from game, whether they be kicked, leaving, or game ending
-    public void removePlayerFromArena(Player playerToRemove) {
-        // TODO: :)
-        // Clearing their vote count properly (make a new method for this in the vote
-        // machine class)
-        // Rest of the normal stuff
+    public void removePlayerFromArena(Player player) {
+        GameMethods.getInstance().removePlayerFromGame(player, this); // I guess this is game specific?
+        voteMachine.removePlayerFromVoteStorage(player);
+
+        // Remove player from respective arena related queues
+        playerQueue.remove(player);
+        activePlayers.remove(player);
+
+        // May need to maintain a few more things? Does sign update as expected?
 
         // Reset timer if game is empty
         if (playerQueue.size() == 0) {

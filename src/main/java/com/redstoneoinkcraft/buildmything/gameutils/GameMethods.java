@@ -80,6 +80,7 @@ public class GameMethods {
         if (playersInGames.contains(player))
             playersInGames.remove(player);
         arena.removePlayerFromArena(player);
+        player.teleport(player.getWorld().getSpawnLocation()); // Should suffice
     }
 
     private int maxPlayersPergame = 12;

@@ -113,30 +113,42 @@ public class ArenaVoteMachine implements Listener {
     private HashMap<Player, int[]> userVoteStorage = new HashMap<Player, int[]>();
 
     public void addPlayerToVoteStorage(Player player) {
-        userVoteStorage.put(player, new int[] { -1, -1 });
+        userVoteStorage.put(player, new int[] { -1, -1 }); // TODO: No need for whole player to be the key, just have
+                                                           // their username or something
     }
 
-    // Method to handle player voting (there is probably a much better way to do
-    // voting?)
+    public void removePlayerFromVoteStorage(Player player) {
+        // This is done to completely eradicate a player's vote
+        int[] userVotes = userVoteStorage.get(player);
+        if (userVotes != null) {
+            for (int i = 0; i < userVotes.length; i++) {
+                if (userVotes[i] != -1) { // thus user has voted
+                    decrRoundNumberVotes(userVotes[i]); // i.e. if vote is '4', they voted for the '4th' option for the
+                                                        // 0th userVotes choice (round number)
+                }
+            }
+        }
+        userVoteStorage.remove(player);
+    }
+
+    // Method to handle player voting (is there a better way?)
     // Future note: Overload method with non-int if voting differs
     public void doPlayerVote(Player voter, int voteStorageIndex, int voteValue) {
         boolean hasUserVoted = userVoteStorage.get(voter)[voteStorageIndex] != -1; // True if user has voted
 
-        if (voteStorageIndex == 0) { // Handle round number votes
-            if (hasUserVoted)
-                decrRoundNumberVotes(userVoteStorage.get(voter)[voteStorageIndex]);
-            incrRoundNumberVotes(voteValue);
-        }
-        if (voteStorageIndex == 1) { // Handle time per round votes
-            if (hasUserVoted)
-                decrTimePerRoundVotes(userVoteStorage.get(voter)[voteStorageIndex]);
-            incrTimePerRoundVotes(voteValue);
+        for (int i = 0; i < userVoteStorage.get(voter).length; i++) {
+            if (i == voteStorageIndex && hasUserVoted) {
+                decrRoundNumberVotes(userVoteStorage.get(voter)[voteStorageIndex]); // decr prev vote
+                incrRoundNumberVotes(voteValue); // incr new vote
+                break;
+            }
         }
 
         // Set the user's new vote value
         userVoteStorage.get(voter)[voteStorageIndex] = voteValue;
     }
 
+    // TODO: Make configurable
     private HashMap<Integer, Integer> roundNumberVotes = new HashMap<Integer, Integer>() {
         {
             put(2, 0);
