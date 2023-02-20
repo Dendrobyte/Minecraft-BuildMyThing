@@ -211,16 +211,20 @@ public class ActiveArenaObject {
 
     // Remove player from game, whether they be kicked, leaving, or game ending
     public void removePlayerFromArena(Player player) {
-        GameMethods.getInstance().removePlayerFromGame(player, this); // I guess this is game specific?
         voteMachine.removePlayerFromVoteStorage(player);
 
         // Remove player from respective arena related queues
         playerQueue.remove(player);
         activePlayers.remove(player);
 
-        // May need to maintain a few more things? Does sign update as expected?
+        GameMethods.getInstance().removePlayerFromGame(player, this); // I guess this is game specific?
 
-        // Reset timer if game is empty
+        // Reset sign to num of active players
+        Sign joinSign = (Sign) getJoinSignLocation().getBlock().getState();
+        joinSign.setLine(3, playerQueue.size() + "/" + maxPlayers);
+        joinSign.update();
+
+        // Reset timer if game is empty (resets sign as well, etc.)
         if (playerQueue.size() == 0) {
             endGame();
         }

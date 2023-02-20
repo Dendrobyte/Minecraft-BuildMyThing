@@ -79,7 +79,6 @@ public class GameMethods {
     public void removePlayerFromGame(Player player, ActiveArenaObject arena) {
         if (playersInGames.contains(player))
             playersInGames.remove(player);
-        arena.removePlayerFromArena(player);
         player.teleport(player.getWorld().getSpawnLocation()); // Should suffice
     }
 
