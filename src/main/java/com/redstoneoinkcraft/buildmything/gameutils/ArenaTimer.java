@@ -37,14 +37,15 @@ public class ArenaTimer extends BukkitRunnable {
                 arena.initGame();
             }
         } else {
-
             // Timers for within the game, i.e. rounds
+            System.out.println("Round timer: " + roundTimer);
             roundTimer--;
             if (roundTimer == 0) {
                 cancel();
                 // TODO: Start new round 'n stuff
             } else {
-                // TODO: Do the round stuff (create a method in the arena class to make this one
+                // TODO: Do the round stuff (create a method in the arena class to make this
+                // one)
                 // remain simple
             }
         }

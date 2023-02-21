@@ -6,7 +6,6 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Sign;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -35,7 +34,7 @@ public class ActiveArenaObject {
     private int currentRound = 0;
     boolean inUse = false;
     private ArenaStates currentState = ArenaStates.WAITING;
-    private ArenaVoteMachine voteMachine = new ArenaVoteMachine();
+    private ArenaVoteMachine voteMachine;
 
     /* Object construction */
     // Constructor
@@ -52,6 +51,7 @@ public class ActiveArenaObject {
                 buildRegionCornerTwo.getBlockY() + 2,
                 calcMean(buildRegionCornerOne.getBlockZ(), buildRegionCornerTwo.getBlockZ()));
 
+        this.voteMachine = new ArenaVoteMachine();
         this.maxRound = maxRound;
 
         // Two constructors exist for the timer class. Without a wait time, the wait
@@ -67,7 +67,10 @@ public class ActiveArenaObject {
     }
 
     // Return whoever is the current builder
+    // TODO: This could just be a constant given how many times this is passed
+    // around
     public Player getCurrentBuilder() { // If all is done properly, there will only be one builder :)
+        System.out.println("Active players list: " + activePlayers.toString());
         for (Player player : activePlayers.keySet()) {
             if (activePlayers.get(player) == PlayerStates.BUILDING) {
                 return player;
@@ -252,12 +255,9 @@ public class ActiveArenaObject {
         for (Player player : getActivePlayers().keySet()) {
             getActivePlayers().put(player, PlayerStates.SPECTATING); // Set to spectator
         }
+        // setSpectatorToBuilder(getCurrentBuilder());
         broadcastMessage("Build My Thing is about to start... get building, and get guessing!");
-        broadcastMessage("" + ChatColor.RED + ChatColor.ITALIC + "The game is currently in ALPHA. " + ChatColor.WHITE
-                + "If you notice any bugs, please report them. " +
-                "Send screenshots, recordings if you can, and steps on how to re-create that bug to the best of your ability."
-                +
-                ChatColor.GREEN + " We really appreciate your help in making this game a bit better.");
+        broadcastMessage("Rounds: " + getMaxRound() + " | Minutes Per Round: " + getRoundTime() / 60);
         currentRound = 0; // Start as zero since it increments in the method
         startNextRound();
 
@@ -268,12 +268,15 @@ public class ActiveArenaObject {
         Player firstBuilder = playerQueue.getFirst();
         activePlayers.put(firstBuilder, PlayerStates.BUILDING);
         setSpectatorToBuilder(firstBuilder);
+        broadcastMessage("" + ChatColor.GOLD + ChatColor.BOLD + getCurrentBuilder().getName() + ChatColor.GRAY
+                + " is building!");
     }
 
     public void nextBuilder(Player currentBuilder) {
         activePlayers.put(currentBuilder, PlayerStates.SPECTATING); // Put the last person to build back as a spectator
 
         // Go ahead and shift down the queue and reset the builder to a spectator
+        // TODO: I should be passing an iterator object through here
         Player nextPlayer = playerQueue.get(playerQueue.indexOf(currentBuilder) + 1);
         resetBuilderToSpectator(currentBuilder);
         setSpectatorToBuilder(nextPlayer);
@@ -287,6 +290,7 @@ public class ActiveArenaObject {
         nextBuilder.setGameMode(GameMode.CREATIVE);
 
         // Fill inventory with basic wool color blocks
+        // TODO: Refactor this to read from a file
         nextBuilder.getInventory().setItem(0, new ItemStack(Material.WHITE_WOOL));
         nextBuilder.getInventory().setItem(1, new ItemStack(Material.RED_WOOL));
         nextBuilder.getInventory().setItem(2, new ItemStack(Material.ORANGE_WOOL));
@@ -331,8 +335,7 @@ public class ActiveArenaObject {
             broadcastMessage("" + ChatColor.AQUA + ChatColor.ITALIC + "This is the final round- make it count!");
         }
 
-        // Restart the queue and builder stuff (more or less totally irrelevant to other
-        // things and can operate on its own)
+        // Initiate builder queue, timers, etc.
         startQueue();
     }
 

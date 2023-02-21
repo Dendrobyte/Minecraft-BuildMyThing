@@ -50,8 +50,17 @@ public class ArenaVoteMachine implements Listener {
 
     public ArenaVoteMachine() {
         // Create the inventory itself
+        // TODO: Voting options (time, rounds) should reflect config change.
+        // Save for beta probably, not mvp-esque
         voteInventory = Bukkit.createInventory(null, 9,
                 "" + ChatColor.DARK_PURPLE + ChatColor.BOLD + "Build My Thing - Voting");
+        {
+            ItemStack temp = new ItemStack(Material.FIRE);
+            ItemMeta tempMeta = temp.getItemMeta();
+            tempMeta.setDisplayName("" + ChatColor.RED + ChatColor.BOLD + "None of this works yet :)");
+            temp.setItemMeta(tempMeta);
+            voteInventory.setItem(1, temp);
+        }
         {
             // Clock to vote for length of each round
             ItemStack clock = new ItemStack(invItems[0]);
@@ -88,9 +97,9 @@ public class ArenaVoteMachine implements Listener {
             voteInventory.setItem(7, barrier);
         }
 
-        // Initialize vote values (bogus values, reset immediately)
-        roundNumber = 60;
-        timePerRound = 600;
+        // Initialize vote values to defaults -- pull from config, remove upstream?
+        roundNumber = 3; // getRoundNumber();
+        timePerRound = 60; // getTimePerRound();
 
     }
 
@@ -159,6 +168,7 @@ public class ArenaVoteMachine implements Listener {
         }
     };
 
+    // TODO: Getting errors here. Either try voting twice, or voting then leaving.
     public void incrRoundNumberVotes(int voteToIncr) {
         roundNumberVotes.put(voteToIncr, roundNumberVotes.get(voteToIncr) + 1);
         roundNumberInventory = generateRoundNumberInventory();

@@ -27,6 +27,7 @@ public class GameMethods {
     private ArrayList<ActiveArenaObject> loadedArenas = new ArrayList<>(2);
 
     public void createArena(String name) {
+        // TODO: Max rounds and round time defaults should be loaded from config (and vote options should as well!)
         ActiveArenaObject currentArena = new ActiveArenaObject(name, 3, 60); // Create arena with default values
         loadedArenas.add(currentArena);
     }
@@ -72,6 +73,11 @@ public class GameMethods {
         } else {
             arena.addPlayerToArena(player);
             playersInGames.add(player);
+
+            player.sendMessage("" + ChatColor.RED + ChatColor.ITALIC + "The game is currently in ALPHA. "
+                    + ChatColor.WHITE
+                    + "Please report bugs you notice, it would really help us out!");
+
             return true;
         }
     }

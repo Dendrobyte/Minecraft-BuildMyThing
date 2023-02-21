@@ -59,15 +59,20 @@ public class BMTCommand implements CommandExecutor {
                 if (arena.getCurrentState() == ArenaStates.WAITING) {
                     arena.initGame();
                     player.sendMessage(prefix + ChatColor.RED + "DEV COMMAND: Arena state changed to active.");
+                    return true;
                 }
-                if (arena.getActivePlayers().get(player) == PlayerStates.SPECTATING) {
-                    arena.setSpectatorToBuilder(player);
-                    player.sendMessage(
-                            prefix + ChatColor.RED + "DEV COMMAND: Your state has gone from SPECTATING to BUILDING");
-                } else if (arena.getActivePlayers().get(player) == PlayerStates.BUILDING) {
-                    arena.resetBuilderToSpectator(player);
-                    player.sendMessage(
-                            prefix + ChatColor.RED + "DEV COMMAND: Your state has gone from BUILDING to SPECTATING");
+                if (arena.getCurrentState() == ArenaStates.ACTIVE) {
+                    if (arena.getActivePlayers().get(player) == PlayerStates.SPECTATING) {
+                        arena.setSpectatorToBuilder(player);
+                        player.sendMessage(
+                                prefix + ChatColor.RED
+                                        + "DEV COMMAND: Your state has gone from SPECTATING to BUILDING");
+                    } else if (arena.getActivePlayers().get(player) == PlayerStates.BUILDING) {
+                        arena.resetBuilderToSpectator(player);
+                        player.sendMessage(
+                                prefix + ChatColor.RED
+                                        + "DEV COMMAND: Your state has gone from BUILDING to SPECTATING");
+                    }
                 }
             }
         }
@@ -142,6 +147,11 @@ public class BMTCommand implements CommandExecutor {
                     utils.getArenaByPlayer(player)
                             .broadcastMessage("The game is being force stopped by " + player.getName() + "!");
                     utils.getArenaByPlayer(player).endGame();
+
+                } else if (args[0].equalsIgnoreCase("debug")) {
+                    // For any issues that come up, shoulder simply iterate over a given game state.
+                    // Screenshots of this would be nice.
+                    // TODO: Implement
                 }
                 return true;
             }
