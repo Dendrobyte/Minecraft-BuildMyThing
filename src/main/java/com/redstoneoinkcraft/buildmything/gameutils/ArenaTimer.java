@@ -45,7 +45,6 @@ public class ArenaTimer extends BukkitRunnable {
                 // TODO: Does this automatically reset roundTimer to what it was before?
                 arena.endCurrentTurn();
                 cancel();
-                // TODO: Start new round 'n stuff
             }
             roundTimer--;
         }
