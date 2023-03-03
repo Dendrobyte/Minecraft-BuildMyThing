@@ -44,6 +44,7 @@ public class Main extends JavaPlugin {
         // Load all arenas
         // TODO: Loop through arena names in the config and create them. Details filled
         // in within the ActiveArenaObject.
+        // This is why arenas aren't loading lol
         for (String arenaName : getConfig().getConfigurationSection("arenas").getKeys(false)) {
             getLogger().log(Level.INFO, "BMT -- Loading map " + arenaName);
             GameMethods.getInstance().createArena(arenaName);
@@ -78,6 +79,8 @@ public class Main extends JavaPlugin {
 
         Bukkit.getServer().getPluginManager().registerEvents(new ArenaVoteMachineListeners(), this);
         Bukkit.getServer().getPluginManager().registerEvents(new RestrictBuilderPlacementListener(), this);
+
+        Bukkit.getServer().getPluginManager().registerEvents(new PlayersChatListener(), this);
     }
 
     private void createConfig() {

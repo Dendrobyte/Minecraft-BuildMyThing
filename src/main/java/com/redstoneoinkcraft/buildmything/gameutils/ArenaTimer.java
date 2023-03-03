@@ -34,6 +34,7 @@ public class ArenaTimer extends BukkitRunnable {
             timeUntilStart--;
             if (roundTimer == 0) {
                 cancel();
+                gameStarted = true;
                 arena.initGame();
             }
         } else {
@@ -41,13 +42,11 @@ public class ArenaTimer extends BukkitRunnable {
             System.out.println("Round timer: " + roundTimer);
             roundTimer--;
             if (roundTimer == 0) {
+                // TODO: Does this automatically reset roundTimer to what it was before?
+                arena.endCurrentTurn();
                 cancel();
-                // TODO: Start new round 'n stuff
-            } else {
-                // TODO: Do the round stuff (create a method in the arena class to make this
-                // one)
-                // remain simple
             }
+            roundTimer--;
         }
     }
 }

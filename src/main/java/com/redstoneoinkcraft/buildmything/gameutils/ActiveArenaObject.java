@@ -36,6 +36,9 @@ public class ActiveArenaObject {
     private ArenaStates currentState = ArenaStates.WAITING;
     private ArenaVoteMachine voteMachine;
 
+    private String currentWord;
+    private String[] wordChoices; // Feels like there's a better way than to just save these on the arena
+
     /* Object construction */
     // Constructor
     public ActiveArenaObject(String name, int maxRound, int roundTime) {
@@ -67,6 +70,7 @@ public class ActiveArenaObject {
     }
 
     // Return whoever is the current builder
+    public Player getCurrentBuilder() { // If all is done properly, there will only be one builder :)
     // TODO: This could just be a constant given how many times this is passed
     // around
     public Player getCurrentBuilder() { // If all is done properly, there will only be one builder :)
@@ -159,6 +163,14 @@ public class ActiveArenaObject {
         return voteMachine;
     }
 
+    public String getCurrentWord() {
+        return currentWord;
+    }
+
+    public String[] getWordChoices() { // returns a list of words the new builder can build
+        return this.wordChoices;
+    }
+
     // Methods for the game timer (before first round starts)
     private int adjustTimeUntilStart(int seconds) {
         return timer.timeUntilStart = seconds;
@@ -170,18 +182,22 @@ public class ActiveArenaObject {
         // Initiate queues
         playerQueue.add(player);
         activePlayers.put(player, PlayerStates.WAITING); // TODO: Allow players to join as spectators if the game is
+                                                         // already running (this would go in below if block I guess)
+                                                         // already running.
                                                          // already running.
         player.teleport(getLobbyLoc());
         voteMachine.addPlayerToVoteStorage(player);
 
         // Calc things to start the game
         if (currentState == ArenaStates.WAITING) {
+            // Set initial round and times per round depending on player count
             // These are not announced, as a vote will override them at the very end of the
             // waiting phase
             if (activePlayers.size() == 2) {
                 voteMachine.setRoundNumber(5);
                 voteMachine.setTimePerRound(60);
                 // Start the game timer
+                // When this hits 0 to start, that's when the game starts'
                 timer.runTaskTimer(Main.getInstance(), 0, 20);
             } else if (activePlayers.size() == 5) {
                 voteMachine.setRoundNumber(3);
@@ -230,26 +246,24 @@ public class ActiveArenaObject {
         // Reset timer if game is empty (resets sign as well, etc.)
         if (playerQueue.size() == 0) {
             endGame();
-        }
+        } // TODO: Ensure that if it goes from X players -> 1, we reset the timer
     }
 
     // Initiate the game. This is called when the corresponding ArenaTimer hits 0
     // before the game has started
     public void initGame() {
 
+        // Set up proper arena data
+        currentState = ArenaStates.ACTIVE;
+
         // Change the join sign
         Sign joinSign = (Sign) getJoinSignLocation().getBlock().getState();
         joinSign.setLine(2, ChatColor.GREEN + "ACTIVE");
         joinSign.update();
 
-        // Set up proper arena data
-        currentState = ArenaStates.ACTIVE;
-        timer.gameStarted = true;
-
         // Set final values of round information
         setMaxRound(voteMachine.getRoundNumber());
         setRoundTime(voteMachine.getTimePerRound());
-        timer.runTaskTimer(Main.getInstance(), 0, 20); // Start the timer as a round timer
 
         // Set up player details and whatnot
         for (Player player : getActivePlayers().keySet()) {
@@ -257,6 +271,12 @@ public class ActiveArenaObject {
         }
         // setSpectatorToBuilder(getCurrentBuilder());
         broadcastMessage("Build My Thing is about to start... get building, and get guessing!");
+        broadcastMessage("" + ChatColor.RED + ChatColor.ITALIC + "The game is currently in ALPHA. " + ChatColor.WHITE
+                + "If you notice any bugs, please report them. " +
+                "Send screenshots, recordings if you can, and steps on how to re-create that bug to the best of your ability."
+                +
+                ChatColor.GREEN + " We really appreciate your help in making this game a bit better.");
+        broadcastMessage("Rounds: " + getMaxRound() + " | Minutes Per Round: " + getRoundTime() / 60);
         broadcastMessage("Rounds: " + getMaxRound() + " | Minutes Per Round: " + getRoundTime() / 60);
         currentRound = 0; // Start as zero since it increments in the method
         startNextRound();
@@ -305,6 +325,12 @@ public class ActiveArenaObject {
         // TODO: This is going to need its own inventory. Additionally, keep in mind
         // that this selection should have a countdown of its own and it starts the
         // round timer.
+        nextBuilder.sendMessage(prefix + "Time to choose a word! Your options are...");
+        String[] words = { "lab", "brain", "apple" }; // TODO: Randomize/pick these from file
+        this.wordChoices = words;
+        nextBuilder.sendMessage(prefix + words); // Stylize?
+        nextBuilder.sendMessage(prefix + ChatColor.GRAY + ChatColor.ITALIC + "Type it out! [BETA MOMENT]");
+        // TODO: Start a timer that, if it hits zero, forces a player to end the turn
     }
 
     // Reset a builder to a spectator
@@ -335,12 +361,17 @@ public class ActiveArenaObject {
             broadcastMessage("" + ChatColor.AQUA + ChatColor.ITALIC + "This is the final round- make it count!");
         }
 
-        // Initiate builder queue, timers, etc.
+        // Restart the queue and builder stuff (more or less totally irrelevant to other
+        // things and can operate on its own)
         startQueue();
     }
 
-    // End a current round, which occurs when either everyone guesses or the timer
-    // has hit 0
+    public void setBuildersWord(String newWord) {
+        this.currentWord = newWord;
+        timer.run();
+        // TODO: Check to make sure the roundTimer thing updated properly :)
+    }
+
     public void endCurrentRound() {
         // Send respective messages
         broadcastMessage("The word was...");
@@ -350,14 +381,22 @@ public class ActiveArenaObject {
 
         // If the builder is the last one in the queue, then we've gone through all the
         // players so go to next round
+        // NOTE: I sure do hope order is maintained here!
         if (getCurrentBuilder().getName().equals(playerQueue.getLast().getName())) {
             resetBuilderToSpectator(getCurrentBuilder());
             startNextRound();
             return;
         }
 
-        // Role rotation if the builder wasn't the last one in the queue
+        // Just go to next builder if that wasn't it'
         nextBuilder(getCurrentBuilder());
+
+        /*
+         * Note to self: So pretty much, a round is defined as all players have had a
+         * turn. Interesting choice of my past self...
+         * We just cycle through builders and don't consider one person builder a
+         * "round". Weird thing, but do consider that. We'll call that a "turn"
+         */
 
         // TODO: There's probably other stuff that needs to be done
     }

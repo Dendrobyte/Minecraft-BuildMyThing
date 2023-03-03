@@ -27,7 +27,8 @@ public class GameMethods {
     private ArrayList<ActiveArenaObject> loadedArenas = new ArrayList<>(2);
 
     public void createArena(String name) {
-        // TODO: Max rounds and round time defaults should be loaded from config (and vote options should as well!)
+        // TODO: Max rounds and round time defaults should be loaded from config (and
+        // vote options should as well!)
         ActiveArenaObject currentArena = new ActiveArenaObject(name, 3, 60); // Create arena with default values
         loadedArenas.add(currentArena);
     }
@@ -55,6 +56,10 @@ public class GameMethods {
 
     // Little wrapper methods of sorts
     ArrayList<Player> playersInGames = new ArrayList<>(2);
+
+    public boolean isPlayerInGame(Player player) {
+        return playersInGames.contains(player);
+    }
 
     public boolean addPlayerToGame(Player player, ActiveArenaObject arena) {
         if (playersInGames.contains(player)) {
@@ -85,6 +90,7 @@ public class GameMethods {
     public void removePlayerFromGame(Player player, ActiveArenaObject arena) {
         if (playersInGames.contains(player))
             playersInGames.remove(player);
+        arena.removePlayerFromArena(player);
         player.teleport(player.getWorld().getSpawnLocation()); // Should suffice
     }
 

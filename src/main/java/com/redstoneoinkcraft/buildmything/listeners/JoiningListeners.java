@@ -54,7 +54,7 @@ public class JoiningListeners implements Listener {
                 boolean added = gameMethods.addPlayerToGame(player, currArena);
                 if (added) {
 
-                    // Update the sign
+                    // Update the sign -- NOTE: Probably refactor this into a general utils file?
                     String pCountString = joinSign.getLine(3).split("/")[0];
                     int currPCount = Integer.parseInt(pCountString); // It's pretty reliable that this will always be a
                                                                      // number
