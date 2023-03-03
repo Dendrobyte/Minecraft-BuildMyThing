@@ -16,11 +16,11 @@ import org.bukkit.event.entity.EntityDropItemEvent;
 public class PreventItemDropListener implements Listener {
 
     @EventHandler
-    public void playerDropsItemInBMT(EntityDropItemEvent event){
-        if(event.getEntityType() == EntityType.PLAYER){
+    public void playerDropsItemInBMT(EntityDropItemEvent event) {
+        if (event.getEntityType() == EntityType.PLAYER) {
             // TODO: If player is in a game as well
-            Player player = (Player)event.getEntity();
-            if(CreationMethods.getInstance().getPlayerCreationState(player) != null /* || */) {
+            Player player = (Player) event.getEntity();
+            if (CreationMethods.getInstance().getPlayerCreationState(player) != null /* || */) {
                 event.setCancelled(true);
             }
         }

@@ -2,6 +2,8 @@
 
 # General Idea
 
+**This is based off of a project I started about 2 years prior to finishing... Lots of TODOs and refactoring I may never get to.** Just saying... doesn't reflect how I see code structure these days :)
+
 The general idea behind `Build My Thing` is your classic Pictionary but in Minecraft! The goal is for it to run just as [http://www.skribbl.io](http://www.skribbl.io) does, but instead of drawing you're building.
 
 All issues and potential features can be found on this here repository!

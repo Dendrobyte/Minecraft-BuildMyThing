@@ -16,12 +16,13 @@ public class CreationArenaObject {
     String name;
 
     // Constructor for creation methods to then load to config
-    public CreationArenaObject(Location lobbySpawnLocation){
+    public CreationArenaObject(Location lobbySpawnLocation) {
         this.lobbySpawnLocation = lobbySpawnLocation;
     }
 
     // Overloaded constructor for loading from config
-    public CreationArenaObject(String name, Location lobbySpawnLocation, Location joinSignLocation, Location buildRegionCornerOne, Location buildRegionCornerTwo){
+    public CreationArenaObject(String name, Location lobbySpawnLocation, Location joinSignLocation,
+            Location buildRegionCornerOne, Location buildRegionCornerTwo) {
         this.name = name;
         this.lobbySpawnLocation = lobbySpawnLocation;
         this.joinSignLocation = joinSignLocation;
@@ -35,7 +36,8 @@ public class CreationArenaObject {
     }
 
     public void setLobbySpawnLocation(Location lobbySpawnLocation) {
-        this.lobbySpawnLocation = new Location(lobbySpawnLocation.getWorld(), lobbySpawnLocation.getBlockX(), lobbySpawnLocation.getBlockY()+2, lobbySpawnLocation.getBlockZ());
+        this.lobbySpawnLocation = new Location(lobbySpawnLocation.getWorld(), lobbySpawnLocation.getBlockX(),
+                lobbySpawnLocation.getBlockY() + 2, lobbySpawnLocation.getBlockZ());
     }
 
     public Location getJoinSignLocation() {
@@ -51,7 +53,8 @@ public class CreationArenaObject {
     }
 
     public void setBuildRegionCornerOne(Location buildRegionCornerOne) {
-        this.buildRegionCornerOne = new Location(buildRegionCornerOne.getWorld(), buildRegionCornerOne.getBlockX(), buildRegionCornerOne.getBlockY()+1, buildRegionCornerOne.getBlockZ());
+        this.buildRegionCornerOne = new Location(buildRegionCornerOne.getWorld(), buildRegionCornerOne.getBlockX(),
+                buildRegionCornerOne.getBlockY() + 1, buildRegionCornerOne.getBlockZ());
     }
 
     public Location getBuildRegionCornerTwo() {
@@ -59,19 +62,20 @@ public class CreationArenaObject {
     }
 
     public void setBuildRegionCornerTwo(Location buildRegionCornerTwo) {
-        this.buildRegionCornerTwo = new Location(buildRegionCornerTwo.getWorld(), buildRegionCornerTwo.getBlockX(), buildRegionCornerTwo.getBlockY()+1, buildRegionCornerTwo.getBlockZ());
+        this.buildRegionCornerTwo = new Location(buildRegionCornerTwo.getWorld(), buildRegionCornerTwo.getBlockX(),
+                buildRegionCornerTwo.getBlockY() + 1, buildRegionCornerTwo.getBlockZ());
     }
 
-    public String getName(){
+    public String getName() {
         return this.name;
     }
 
-    public void setName(String name){
+    public void setName(String name) {
         this.name = name;
     }
 
     // Misc methods
-    public void writeArenaToConfig(){
+    public void writeArenaToConfig() {
         String basePath = "arenas." + name;
         Main.getInstance().getConfig().set(basePath + ".lobbyspawnloc", lobbySpawnLocation);
         Main.getInstance().getConfig().set(basePath + ".joinsignloc", joinSignLocation);
