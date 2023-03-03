@@ -18,7 +18,7 @@ public class GameMethods {
     String prefix = Main.getInstance().getPrefix();
 
     public static GameMethods getInstance() {
-        if(instance == null){
+        if (instance == null) {
             instance = new GameMethods();
         }
         return instance;
@@ -26,25 +26,27 @@ public class GameMethods {
 
     private ArrayList<ActiveArenaObject> loadedArenas = new ArrayList<>(2);
 
-    public void createArena(String name){
+    public void createArena(String name) {
         ActiveArenaObject currentArena = new ActiveArenaObject(name, 3, 60); // Create arena with default values
         loadedArenas.add(currentArena);
     }
 
-    public ActiveArenaObject getArenaByName(String name){
-        for(ActiveArenaObject arena : loadedArenas){
-            if(arena.getName().equalsIgnoreCase(name)){
+    public ActiveArenaObject getArenaByName(String name) {
+        for (ActiveArenaObject arena : loadedArenas) {
+            if (arena.getName().equalsIgnoreCase(name)) {
                 return arena;
             }
         }
         return null;
     }
 
-    public ActiveArenaObject getArenaByPlayer(Player player){
-        if(!playersInGames.contains(player)) return null;
+    public ActiveArenaObject getArenaByPlayer(Player player) {
+        if (!playersInGames.contains(player))
+            return null;
 
-        for (ActiveArenaObject arena : loadedArenas){
-            if(arena.isPlayerInArena(player)) return arena;
+        for (ActiveArenaObject arena : loadedArenas) {
+            if (arena.isPlayerInArena(player))
+                return arena;
         }
 
         return null; // We should never hit this line, but we do need it
@@ -53,17 +55,23 @@ public class GameMethods {
     // Little wrapper methods of sorts
     ArrayList<Player> playersInGames = new ArrayList<>(2);
 
-    public boolean addPlayerToGame(Player player, ActiveArenaObject arena){
-        if(playersInGames.contains(player)){
-            player.sendMessage(prefix + "You appear to already be in a game (contact an admin if you believe this is a problem).");
+    public boolean isPlayerInGame(Player player) {
+        return playersInGames.contains(player);
+    }
+
+    public boolean addPlayerToGame(Player player, ActiveArenaObject arena) {
+        if (playersInGames.contains(player)) {
+            player.sendMessage(
+                    prefix + "You appear to already be in a game (contact an admin if you believe this is a problem).");
             return false;
         }
-        if(playersInGames.size()  >= getMaxPlayersPergame()){
+        if (playersInGames.size() >= getMaxPlayersPergame()) {
             player.sendMessage(prefix + "Sorry, that game is currently full!");
             return false;
         }
-        if(arena == null){
-            player.sendMessage(prefix + ChatColor.RED + "This arena doesn't seem to be set up properly. Please contact a staff member!");
+        if (arena == null) {
+            player.sendMessage(prefix + ChatColor.RED
+                    + "This arena doesn't seem to be set up properly. Please contact a staff member!");
             return false;
         } else {
             arena.addPlayerToArena(player);
@@ -72,13 +80,15 @@ public class GameMethods {
         }
     }
 
-    public void removePlayerFromGame(Player player, ActiveArenaObject arena){
-        if(playersInGames.contains(player)) playersInGames.remove(player);
+    public void removePlayerFromGame(Player player, ActiveArenaObject arena) {
+        if (playersInGames.contains(player))
+            playersInGames.remove(player);
         arena.removePlayerFromArena(player);
     }
 
     private int maxPlayersPergame = 12;
-    public int getMaxPlayersPergame(){
+
+    public int getMaxPlayersPergame() {
         return maxPlayersPergame;
     }
 }
