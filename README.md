@@ -1,5 +1,9 @@
 # Build My Thing
 
+## Deprecated Repository
+
+This will be ported over to Oink 2.0, sets a lot of good arena (and chat) precedents that the API can iterate upon and improve with. It will be game 3 or 4.
+
 # General Idea
 
 **This is based off of a project I started about 2 years prior to finishing... Lots of TODOs and refactoring I may never get to.** Just saying... doesn't reflect how I see code structure these days :)
