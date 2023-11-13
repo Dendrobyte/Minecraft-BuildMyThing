@@ -7,7 +7,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 public class VotingInvListener implements Listener {
 
     @EventHandler
-    public void playerChoosesVoteOption(InventoryClickEvent event){
+    public void playerChoosesVoteOption(InventoryClickEvent event) {
 
     }
 

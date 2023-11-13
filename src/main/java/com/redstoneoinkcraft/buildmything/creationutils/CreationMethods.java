@@ -12,7 +12,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.HashMap;
 
-
 /**
  * BuildMyThing created/started by markb (Mobkinz78/Dendrobyte)
  * Please do not use or edit without permission!
@@ -24,15 +23,15 @@ public class CreationMethods {
     private static CreationMethods instance;
     private String prefix = Main.getInstance().getPrefix();
 
-    public static CreationMethods getInstance(){
-        if(instance == null){
+    public static CreationMethods getInstance() {
+        if (instance == null) {
             instance = new CreationMethods();
         }
         return instance;
     }
 
     // The selection tool
-    public ItemStack getCreationWand(){
+    public ItemStack getCreationWand() {
         ItemStack creationWand = new ItemStack(Material.DIAMOND_HOE, 1);
         ItemMeta creationWandMeta = creationWand.getItemMeta();
         creationWandMeta.setDisplayName("" + ChatColor.DARK_PURPLE + ChatColor.BOLD + "BuildMyThing Creation Brush");
@@ -42,42 +41,45 @@ public class CreationMethods {
     }
 
     // Initialize creation for a player
-    public void beginCreation(Player player){
+    public void beginCreation(Player player) {
         changeCreationState(player, CreationStates.ARENA_SPAWN);
         player.getInventory().setItemInMainHand(getCreationWand());
-        player.sendMessage(prefix + ChatColor.GREEN + ChatColor.BOLD + "STARTING CREATION! " + ChatColor.getLastColors(prefix) + ChatColor.ITALIC + "Use creation brush for ALL selections.");
-        player.sendMessage(prefix + "Right click the arena's " + ChatColor.GOLD + ChatColor.BOLD + "LOBBY SPAWN LOCATION");
-        player.sendMessage(prefix + ChatColor.RED + ChatColor.ITALIC + "Please Note: " + ChatColor.GRAY + ChatColor.ITALIC + "This will also be where someone respawns after finishing their buildphase.");
+        player.sendMessage(prefix + ChatColor.GREEN + ChatColor.BOLD + "STARTING CREATION! "
+                + ChatColor.getLastColors(prefix) + ChatColor.ITALIC + "Use creation brush for ALL selections.");
+        player.sendMessage(
+                prefix + "Right click the arena's " + ChatColor.GOLD + ChatColor.BOLD + "LOBBY SPAWN LOCATION");
+        player.sendMessage(prefix + ChatColor.RED + ChatColor.ITALIC + "Please Note: " + ChatColor.GRAY
+                + ChatColor.ITALIC + "This will also be where someone respawns after finishing their buildphase.");
     }
 
     private HashMap<Player, CreationStates> playersCreationStates = new HashMap<Player, CreationStates>(1);
 
     // Change a player's creation state
-    public void changeCreationState(Player player, CreationStates state){
+    public void changeCreationState(Player player, CreationStates state) {
         playersCreationStates.put(player, state);
     }
 
     // Get a player's current creation state
-    public CreationStates getPlayerCreationState(Player player){
+    public CreationStates getPlayerCreationState(Player player) {
         return playersCreationStates.get(player);
     }
 
     private HashMap<Player, CreationArenaObject> playerCreationArenas = new HashMap<Player, CreationArenaObject>(1);
 
     // Get a players creation arena
-    public CreationArenaObject getPlayerCreationArena(Player player){
+    public CreationArenaObject getPlayerCreationArena(Player player) {
         return playerCreationArenas.get(player);
     }
 
     // Set a players creation arena
-    public void setPlayerCreationArena(Player player, CreationArenaObject arena){
+    public void setPlayerCreationArena(Player player, CreationArenaObject arena) {
         playerCreationArenas.put(player, arena);
     }
 
     // Edit the join sign
-    public void writeJoinSign(Location signLoc, String name){
+    public void writeJoinSign(Location signLoc, String name) {
         Sign sign = (Sign) signLoc.getBlock().getState();
-        sign.setLine(0, prefix.substring(0, prefix.length()-1));
+        sign.setLine(0, prefix.substring(0, prefix.length() - 1));
         sign.setLine(1, name);
         sign.setLine(2, "" + ChatColor.GRAY + ChatColor.ITALIC + "WAITING");
         sign.setLine(3, "0/" + GameMethods.getInstance().getMaxPlayersPergame());
@@ -85,7 +87,7 @@ public class CreationMethods {
     }
 
     // Wrap up creation
-    public void finalizeCreation(Player player){
+    public void finalizeCreation(Player player) {
         getPlayerCreationArena(player).writeArenaToConfig();
         CreationArenaObject arena = playerCreationArenas.get(player);
         String name = arena.getName();
@@ -97,7 +99,7 @@ public class CreationMethods {
     }
 
     // Remove player from arena creation
-    public void removePlayerFromCreation(Player player){
+    public void removePlayerFromCreation(Player player) {
         playerCreationArenas.remove(player);
         playersCreationStates.remove(player);
         player.getInventory().remove(CreationMethods.getInstance().getCreationWand());

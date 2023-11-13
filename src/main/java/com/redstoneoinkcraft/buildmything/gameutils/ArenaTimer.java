@@ -17,12 +17,12 @@ public class ArenaTimer extends BukkitRunnable {
     boolean gameStarted = false;
 
     // Custom constructor so that we can modify the arena this timer is a part of
-    ArenaTimer(ActiveArenaObject arena){
+    ArenaTimer(ActiveArenaObject arena) {
         this.arena = arena;
     }
 
     // Overloaded constructor, mainly for testing
-    ArenaTimer(ActiveArenaObject arena, int waitTime){
+    ArenaTimer(ActiveArenaObject arena, int waitTime) {
         this.arena = arena;
         this.timeUntilStart = waitTime;
     }
@@ -30,22 +30,23 @@ public class ArenaTimer extends BukkitRunnable {
     @Override
     public void run() {
         // Do things based on the fact the game has not started
-        if(!gameStarted){
+        if (!gameStarted) {
             timeUntilStart--;
             if (roundTimer == 0) {
                 cancel();
+                gameStarted = true;
                 arena.initGame();
             }
         } else {
-
             // Timers for within the game, i.e. rounds
+            System.out.println("Round timer: " + roundTimer);
             roundTimer--;
             if (roundTimer == 0) {
+                // TODO: Does this automatically reset roundTimer to what it was before?
+                arena.endCurrentTurn();
                 cancel();
-                // TODO: Start new round 'n stuff
-            } else {
-                // TODO: Do the round stuff (create a method in the arena class to make this one remain simple
             }
+            roundTimer--;
         }
     }
 }

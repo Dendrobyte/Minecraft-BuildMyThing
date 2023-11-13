@@ -1,11 +1,13 @@
 package com.redstoneoinkcraft.buildmything;
 
 import com.redstoneoinkcraft.buildmything.commands.BMTCommand;
-import com.redstoneoinkcraft.buildmything.gameutils.ActiveArenaObject;
 import com.redstoneoinkcraft.buildmything.gameutils.ArenaVoteMachineListeners;
 import com.redstoneoinkcraft.buildmything.gameutils.GameMethods;
 import com.redstoneoinkcraft.buildmything.gameutils.RestrictBuilderPlacementListener;
 import com.redstoneoinkcraft.buildmything.listeners.*;
+
+import net.md_5.bungee.api.ChatColor;
+
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -21,26 +23,20 @@ import java.util.logging.Level;
 public class Main extends JavaPlugin {
 
     private static Main instance;
-    private String prefix = "§8[§5Build My Thing§8]§7 ";
+    private String prefix = String.format("%s[%sBuild My Thing%s]%s ", ChatColor.DARK_GRAY, ChatColor.DARK_PURPLE,
+            ChatColor.DARK_GRAY, ChatColor.GRAY);
 
     @Override
     public void onEnable() {
         // Instantiate main instance
         instance = this;
-        System.out.println(prefix + "Enabling Build My Thing v" + getDescription().getVersion() + "...");
+        getLogger().log(Level.INFO, prefix + "Enabling Build My Thing v" + getDescription().getVersion() + "...");
 
         // Create the configuration files
         createConfig();
 
         // Register events
-        Bukkit.getServer().getPluginManager().registerEvents(new CreationListeners(), this);
-        Bukkit.getServer().getPluginManager().registerEvents(new PreventItemDropListener(), this);
-        Bukkit.getServer().getPluginManager().registerEvents(new JoiningListeners(), this);
-        Bukkit.getServer().getPluginManager().registerEvents(new CommandListeners(), this);
-        Bukkit.getServer().getPluginManager().registerEvents(new BlockBreakListener(), this);
-        Bukkit.getServer().getPluginManager().registerEvents(new VotingInvListener(), this);
-        Bukkit.getServer().getPluginManager().registerEvents(new ArenaVoteMachineListeners(), this);
-        Bukkit.getServer().getPluginManager().registerEvents(new RestrictBuilderPlacementListener(), this);
+        registerAllEvents();
 
         // Get commands
         getCommand("buildmything").setExecutor(new BMTCommand());
@@ -48,13 +44,15 @@ public class Main extends JavaPlugin {
         // Load all arenas
         // TODO: Loop through arena names in the config and create them. Details filled
         // in within the ActiveArenaObject.
+        // This is why arenas aren't loading lol
         for (String arenaName : getConfig().getConfigurationSection("arenas").getKeys(false)) {
-            System.out.println("BMT -- Loading map " + arenaName);
+            getLogger().log(Level.INFO, "BMT -- Loading map " + arenaName);
             GameMethods.getInstance().createArena(arenaName);
-            System.out.println("Loaded " + arenaName + "!");
+            getLogger().log(Level.INFO, "Loaded " + arenaName + "!");
         }
 
-        System.out.println(prefix + "Successfully enabled Build My Thing v" + getDescription().getVersion() + "!");
+        getLogger().log(Level.INFO,
+                prefix + "Successfully enabled Build My Thing v" + getDescription().getVersion() + "!");
     }
 
     public static Main getInstance() {
@@ -67,7 +65,22 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        System.out.println();
+        getLogger().log(Level.INFO, prefix + "Successfully disabled Build My Thing");
+    }
+
+    private void registerAllEvents() {
+        // TODO: Refactor to iterate over entire directory
+        Bukkit.getServer().getPluginManager().registerEvents(new CreationListeners(), this);
+        Bukkit.getServer().getPluginManager().registerEvents(new PreventItemDropListener(), this);
+        Bukkit.getServer().getPluginManager().registerEvents(new JoiningListeners(), this);
+        Bukkit.getServer().getPluginManager().registerEvents(new CommandListeners(), this);
+        Bukkit.getServer().getPluginManager().registerEvents(new BlockBreakListener(), this);
+        Bukkit.getServer().getPluginManager().registerEvents(new VotingInvListener(), this);
+
+        Bukkit.getServer().getPluginManager().registerEvents(new ArenaVoteMachineListeners(), this);
+        Bukkit.getServer().getPluginManager().registerEvents(new RestrictBuilderPlacementListener(), this);
+
+        Bukkit.getServer().getPluginManager().registerEvents(new PlayersChatListener(), this);
     }
 
     private void createConfig() {
